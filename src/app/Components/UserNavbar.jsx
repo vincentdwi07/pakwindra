@@ -9,23 +9,23 @@ export default function UserNavbar(){
                     <span className="visually-hidden">Icon-only</span>
                 </Link>
                 <ul className="nav nav-pills nav-flush d-flex flex-column mb-auto text-center">
-                    <li className="nav-item">
-                    <Link href="#" className="nav-link py-3 border-bottom rounded-0 position-relative" aria-current="page" title="Home" data-bs-toggle="tooltip" data-bs-placement="right">
-                        <h5 className="m-0 p-0"><i className="bi bi-house-door-fill text-dark user-navbar-icon"></i></h5>
-                        <h6 className="navbar-span m-0 text-dark">Home</h6>
-                    </Link>
+                    <li>
+                        <Link href="#" className="nav-link py-3 border-bottom rounded-0 position-relative" aria-current="page" title="Home" data-bs-toggle="tooltip" data-bs-placement="right">
+                            <h5 className="m-0 p-0"><i className="bi bi-house-door-fill user-navbar-icon"></i></h5>
+                            <h6 className="navbar-span m-0 text-dark">Home</h6>
+                        </Link>
                     </li>
                     <li>
-                    <Link href="#" className="nav-link py-3 border-bottom rounded-0 position-relative" title="Dashboard" data-bs-toggle="tooltip" data-bs-placement="right">
-                        <h5 className="m-0 p-0"><i className="bi bi-speedometer2 text-dark user-navbar-icon"></i></h5>
-                        <h6 className="navbar-span m-0 text-dark">Dashboard</h6>
-                    </Link>
+                        <Link href="#" className="nav-link py-3 border-bottom rounded-0 position-relative" title="Dashboard" data-bs-toggle="tooltip" data-bs-placement="right">
+                            <h5 className="m-0 p-0"><i className="bi bi-speedometer2 user-navbar-icon"></i></h5>
+                            <h6 className="navbar-span m-0 text-dark">Dashboard</h6>
+                        </Link>
                     </li>
                     <li>
-                    <Link href="#" className="nav-link py-3 border-bottom rounded-0 position-relative" title="Task" data-bs-toggle="tooltip" data-bs-placement="right">
-                        <h5 className="m-0 p-0"><i className="bi bi-list-task text-dark user-navbar-icon"></i></h5>
-                        <h6 className="navbar-span m-0 text-dark">Task</h6>
-                    </Link>
+                        <Link href="#" className="nav-link py-3 border-bottom rounded-0 position-relative" title="Task" data-bs-toggle="tooltip" data-bs-placement="right">
+                            <h5 className="m-0 p-0"><i className="bi bi-list-task user-navbar-icon"></i></h5>
+                            <h6 className="navbar-span m-0 text-dark">Task</h6>
+                        </Link>
                     </li>
                 </ul>
                 <div className="dropdown border-top">

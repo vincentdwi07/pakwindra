@@ -178,7 +178,8 @@
   left: 50px;
   opacity: 0;
   transform: translateX(-20px);
-  transition: all 0.1s ease;
+  transition: transform 0.1s ease;
+  transition: color 0.3s ease;
 }
 
 .nav-pills{
@@ -207,8 +208,17 @@
   pointer-events: auto;
 }
 
-.nav-item{
-  transition: all 0.3s ease;
+.user-navbar .nav-link{
+  color: black !important;
+}
+
+.user-navbar .nav-link:hover{
+  background-color: #212529;
+  color: white !important;
+}
+
+.user-navbar .nav-link:hover h6{
+  color: white !important;
 }
 
 /* USER DASHBOARD */
@@ -240,14 +250,73 @@
 
 .exam-content:hover{
   box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.1);
-
-  cursor: pointer;
 }
 
 .total-task{
-  display: inline-block;
-  border: 1px solid lightgray;
+  display: inline-flex;
+  flex-shrink: 0;
   width: auto;
+  border: 1px solid lightgray;
   padding: 7px;
   border-radius: 5px;
+}
+
+.btn-user-feedback{
+  display: inline-block;
+  width: auto;
+  border: 1px solid lightgray;
+  padding: 7px;
+  border-radius: 5px;
+}
+
+.btn-user-feedback:hover{
+  background-color: #212529;
+  color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.accordionCollapse {
+  transition: all 0.3s ease;
+}
+
+.accordion-body{
+  background-color: rgb(230, 230, 230);
+  padding: 15px;
+  margin-top: -5px;
+  border-radius: 0 0 5px 5px;
+}
+
+.bi-caret-up-fill{
+  display: inline-flex;
+  transform: rotate(0) translateY(2px);
+  transition: transform 0.3s ease;
+}
+
+.bi-caret-up-fill.rotated {
+  display: inline-flex;
+  transform: rotate(180deg) translateY(-2px);
+  transition: transform 0.3s ease;
+}
+
+.btn-exam-content-start{
+  display: inline-block;
+  width: auto;
+  border: 1px solid lightgray;
+  padding: 7px;
+  padding-inline: 15px;
+  border-radius: 5px;
+  color: white;
+  background-color: #212529;
+}
+
+.btn-exam-content-start .bi-arrow-right-short{
+  display: inline-block;
+  transform: translateX(0);
+  transition: all 0.3s ease;
+}
+
+.btn-exam-content-start:hover .bi-arrow-right-short{
+  display: inline-block;
+  transform: translateX(5px);
+  transition: all 0.3s ease;
 }
