@@ -43,7 +43,7 @@ export default function UserRegister() {
               </div>
               <input type="password" className="password-input-user" placeholder="Input your password" id="password"/>
             </div>
-            <button type="submit" className="w-100 outline-0 border-0 p-2 rounded-2 bg-dark text-light fw-bold">REGISTER</button>
+            <button type="submit" className="w-100 outline-0 border-0 p-2 rounded-2 bg-dark text-light fw-bold shadow">REGISTER</button>
           </form>
           <p className="mt-4">Already have account?<span><Link href="/login">Login</Link></span></p>
         </div>

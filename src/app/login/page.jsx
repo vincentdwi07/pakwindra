@@ -42,7 +42,7 @@ export default function UserLogin() {
               <input type="checkbox" />
               <label htmlFor="">Remember Me</label>
             </div>
-            <button type="submit" className="w-100 outline-0 border-0 fw-bold p-2 rounded-2 bg-dark text-light">LOGIN</button>
+            <button type="submit" className="w-100 outline-0 border-0 fw-bold p-2 rounded-2 bg-dark text-light shadow">LOGIN</button>
           </form>
           <p className="mt-4">Doesn't have account?<span><Link href="/signup">Sign up</Link></span></p>
         </div>
