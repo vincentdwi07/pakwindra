@@ -13,7 +13,8 @@ export default function Home() {
       title : "Lesson 1: Belajar Bebek",
       description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laboriosam, recusandae obcaecati nesciunt quis commodi dignissimos nostrum pariatur ullam, atque explicabo, in consequuntur porro. Rerum, ea perferendis adipisci qui iste placeat!",
       status: "graded",
-      score: 90,
+      min_score: 75,
+      score: 48,
       user_id: "Pak Windra",
     }
   }
@@ -32,6 +33,7 @@ export default function Home() {
                 title={tabsData[tabKey].title}
                 description={tabsData[tabKey].description}
                 status={tabsData[tabKey].status}
+                min_score={tabsData[tabKey].min_score}
                 score={tabsData[tabKey].score}
                 user_id={tabsData[tabKey].user_id}
               />

@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-export default function ExamContent({subject, title, description, status, score, user_id}) {
+export default function ExamContent({subject, title, description, status, score, user_id, min_score}) {
+    console.log(min_score)
     return (
         <>
             <div className="exam-content">
@@ -22,21 +23,11 @@ export default function ExamContent({subject, title, description, status, score,
                             </p>
                         </div>
                         {status === "graded" ? (
-                            <div className='user-exam-score'>{score}/100</div>
-                        ):(
-                            ''
-                        )
+                                <div className={`user-exam-score text-light ${score < min_score ? 'bg-danger' : 'bg-success'}`}><span><i className="bi bi-file-earmark-check-fill me-2"></i></span>{score}/100</div>
+                            ):(
+                                ''  
+                            )
                         }
-                        {/* <button 
-                            className={`accordion-button btn-user-feedback ${!isOpen ? 'collapsed' : ''}`}
-                            type="button"   
-                            onClick={() => setIsOpen(!isOpen)}
-                            aria-expanded={isOpen}
-                        >
-                            <span><i className="bi bi-chat-left-text-fill me-2"></i></span>
-                            Feedbacks
-                            <span><i className={`bi bi-caret-up-fill ms-1 ${isOpen ? '' : 'rotated'}`}></i></span>
-                        </button> */}
                     </div>
                     <div>
                         <Link href={{  }} style={{ textDecoration: "none" }} className='btn-exam-content-start'>
@@ -46,17 +37,6 @@ export default function ExamContent({subject, title, description, status, score,
                 </div>
 
             </div>  
-            {/* <div 
-                className={`accordion-collapse collapse ${isOpen ? 'show' : ''}`}
-            >
-                <div className="accordion-body">
-                    <strong><p className='m-0 p-0'>Pak Windra:</p></strong>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo doloremque cumque adipisci facere nostrum incidunt cupiditate, voluptatem voluptatum magnam eligendi minus sequi illo excepturi sit expedita consequatur ullam reprehenderit explicabo?</p>
-                    <strong><p className='m-0 p-0'>Chat GPT:</p></strong>
-                    <p className='p-0 m-0'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo doloremque cumque adipisci facere nostrum incidunt cupiditate, voluptatem voluptatum magnam eligendi minus sequi illo excepturi sit expedita consequatur ullam reprehenderit explicabo?</p>
-                </div>
-            </div> */}
-
         </>
     )
 }
