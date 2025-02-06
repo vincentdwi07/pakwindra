@@ -1,4 +1,3 @@
-
 .user-login{
   height: 100vh;
   width: 100%;
@@ -160,6 +159,7 @@
 }
 
 /* USER NAVBAR */
+
 .user-navbar{
   max-width: 4.5rem;
   width: 4.5rem;   
@@ -221,6 +221,18 @@
   color: white !important;
 }
 
+.responsive-user-navbar{
+  position: absolute;
+  top: 0;
+  width: 100%;
+  left: 0;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  z-index: 999;
+}
+
 /* USER DASHBOARD */
 .user-dashboard{
   display: flex;
@@ -230,7 +242,6 @@
 .user-dashboard-content{
   z-index: 0;
   margin: 1rem 1rem 1rem 6rem;
-  
 }
 
 /* EXAM CONTENT */
@@ -238,7 +249,7 @@
   border: 1px solid lightgray;
   border-radius: 5px;
   padding: 15px;
-  width: 90vw;
+  width: 100%;
   margin-top: 25px;
   box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   transition: all 0.2s ease-in-out;
@@ -319,4 +330,104 @@
   display: inline-block;
   transform: translateX(5px);
   transition: all 0.3s ease;
+}
+
+/* EXAM DETAIL */
+.exam-detail-content{
+  margin: 1rem 1rem 1rem 6rem;
+}
+
+.nav-exam-detail-content{
+  list-style-type: none;
+  display: flex;
+  gap: 10px; 
+  font-size: 1.2rem;
+}
+
+.nav-exam-detail-content a{
+  text-decoration: none;
+}
+.nav-exam-detail-content a:hover{
+  text-decoration: underline;
+}
+
+.user-task{
+  border: 1px solid lightgray;
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 1rem;
+}
+
+.tab {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 10px;
+}
+
+.tab button{
+  background-color: white;
+  outline: none;
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 10px;
+  flex-grow: 1;
+}
+
+.tab button.active {
+  background-color:#212529;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.instruction{
+  display: none;
+  margin-top: 15px;
+}
+
+.instruction.show {
+  display: block;
+}
+
+.form-control{
+  display: inline-block;
+  width: auto;
+  border-color: gray;
+}
+
+.btn-submit-file-user{
+  border: 1px solid gray;
+  background-color: #212529;
+  color: white;
+  padding: 5px;
+  padding-inline: 15px;
+  border-radius: 5px;
+  margin-left: 10px;
+}
+
+.user-exam-feedback{
+  margin-top: 1rem;
+  padding: 15px;
+  border-radius: 5px;
+
+}
+.user-exam-feedback.correct{
+  background-color: #b1ffcc;
+}
+
+.user-exam-feedback.false{
+  background-color: #ffb1b1;
+}
+
+
+
+/* RESPONSIVE */
+@media(max-width: 576px){
+  .user-dashboard-content{
+    margin: 1rem;
+  }
+  .exam-detail-content{
+    margin: 1rem;
+    padding: 0;
+  }
 }

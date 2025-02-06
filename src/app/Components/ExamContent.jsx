@@ -2,15 +2,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-export default function ExamContent() {
-    const [isOpen, setIsOpen] = useState(false); // Set default ke false agar tertutup
-
+export default function ExamContent({subject, title, description, status, score, user_id}) {
     return (
         <>
             <div className="exam-content">
-                <div className="d-flex justify-content-between exam-content-head">
-                    <p>Algoritma</p>
-                    <p><span><i class="bi bi-calendar2-week-fill me-2"></i></span>Due 3 Januari 2025, 11:59 PM</p>
+                <div className="d-flex justify-content-between exam-content-head column-gap-3 flex-wrap">
+                    <p>{subject} | {user_id}</p>
+                    <p><span><i className="bi bi-calendar2-week-fill me-2"></i></span>Due 3 Januari 2025, 11:59 PM</p>
                 </div>
                 <h5>Lesson 1: Belajar Bebek</h5>
                 <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laboriosam, recusandae obcaecati nesciunt quis commodi dignissimos nostrum pariatur ullam, atque explicabo, in consequuntur porro. Rerum, ea perferendis adipisci qui iste placeat!</p>
@@ -23,7 +21,7 @@ export default function ExamContent() {
                                 10 Tasks
                             </p>
                         </div>
-                        <button 
+                        {/* <button 
                             className={`accordion-button btn-user-feedback ${!isOpen ? 'collapsed' : ''}`}
                             type="button"   
                             onClick={() => setIsOpen(!isOpen)}
@@ -32,17 +30,17 @@ export default function ExamContent() {
                             <span><i className="bi bi-chat-left-text-fill me-2"></i></span>
                             Feedbacks
                             <span><i className={`bi bi-caret-up-fill ms-1 ${isOpen ? '' : 'rotated'}`}></i></span>
-                        </button>
+                        </button> */}
                     </div>
                     <div>
                         <Link href={{  }} style={{ textDecoration: "none" }} className='btn-exam-content-start'>
-                            Start <span><i class="bi bi-arrow-right-short"></i></span>
+                            Start <span><i className="bi bi-arrow-right-short"></i></span>
                         </Link>
                     </div>
                 </div>
 
             </div>  
-            <div 
+            {/* <div 
                 className={`accordion-collapse collapse ${isOpen ? 'show' : ''}`}
             >
                 <div className="accordion-body">
@@ -51,7 +49,7 @@ export default function ExamContent() {
                     <strong><p className='m-0 p-0'>Chat GPT:</p></strong>
                     <p className='p-0 m-0'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo doloremque cumque adipisci facere nostrum incidunt cupiditate, voluptatem voluptatum magnam eligendi minus sequi illo excepturi sit expedita consequatur ullam reprehenderit explicabo?</p>
                 </div>
-            </div>
+            </div> */}
 
         </>
     )
