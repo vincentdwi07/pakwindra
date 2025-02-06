@@ -10,8 +10,8 @@ export default function ExamContent({subject, title, description, status, score,
                     <p>{subject} | {user_id}</p>
                     <p><span><i className="bi bi-calendar2-week-fill me-2"></i></span>Due 3 Januari 2025, 11:59 PM</p>
                 </div>
-                <h5>Lesson 1: Belajar Bebek</h5>
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laboriosam, recusandae obcaecati nesciunt quis commodi dignissimos nostrum pariatur ullam, atque explicabo, in consequuntur porro. Rerum, ea perferendis adipisci qui iste placeat!</p>
+                <h5>{title}</h5>
+                <p>{description}</p>
                 
                 <div className='d-flex align-items-center justify-content-between'>
                     <div className='d-flex gap-2'>
@@ -21,6 +21,12 @@ export default function ExamContent({subject, title, description, status, score,
                                 10 Tasks
                             </p>
                         </div>
+                        {status === "graded" ? (
+                            <div className='user-exam-score'>{score}/100</div>
+                        ):(
+                            ''
+                        )
+                        }
                         {/* <button 
                             className={`accordion-button btn-user-feedback ${!isOpen ? 'collapsed' : ''}`}
                             type="button"   

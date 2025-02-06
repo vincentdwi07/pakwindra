@@ -12,8 +12,8 @@ export default function Home() {
       due_date : "2 Januari 2025, 11.59 PM",
       title : "Lesson 1: Belajar Bebek",
       description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laboriosam, recusandae obcaecati nesciunt quis commodi dignissimos nostrum pariatur ullam, atque explicabo, in consequuntur porro. Rerum, ea perferendis adipisci qui iste placeat!",
-      status: "open",
-      score: 0,
+      status: "graded",
+      score: 90,
       user_id: "Pak Windra",
     }
   }
@@ -27,7 +27,13 @@ export default function Home() {
             {Object.keys(tabsData).map((tabKey) =>(
               <ExamContent
                 key={tabsData[tabKey].key}
-                subject
+                subject={tabsData[tabKey].subject}
+                due_date={tabsData[tabKey].due_date}
+                title={tabsData[tabKey].title}
+                description={tabsData[tabKey].description}
+                status={tabsData[tabKey].status}
+                score={tabsData[tabKey].score}
+                user_id={tabsData[tabKey].user_id}
               />
             ))}
 

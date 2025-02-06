@@ -419,7 +419,11 @@
   background-color: #ffb1b1;
 }
 
-
+.user-exam-score{
+  padding: 5px;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+}
 
 /* RESPONSIVE */
 @media(max-width: 576px){
