@@ -169,11 +169,15 @@ input:-webkit-autofill:active {
 }
 
 .role-input-user{
-  border: 1.5px solid gray;
+  border: 0;
+  border-bottom: 1.5px solid gray;
   padding-left: 25px;
   padding-right: 25px;
-  border-radius: 5px 5px 5px 5px;
   padding-block: 3px;
+}
+
+.role-input-user:focus{
+  outline: none;
 }
 
 .email-input-user{
