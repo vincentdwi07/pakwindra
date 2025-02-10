@@ -9,13 +9,82 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  EDUCATOR
+  STUDENT
+}
+
+enum ExamStatus {
+  OPEN
+  GRADING
+  GRADED
+}
+
+enum QuizStatus {
+  OPEN
+  GRADING
+  GRADED
+}
+
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
   name     String?
   password String
+
+  role Role
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  examsCreated    Exam[] @relation("ExamCreator")
+  examsEnrolled   Exam[] @relation("ExamEnrollment")
+  quizSubmissions Quiz[] @relation("QuizSubmission")
+}
+
+model Exam {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+  status      ExamStatus @default(OPEN)
+  startDate   DateTime
+  endDate     DateTime
+
+  minScore Float @default(80)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  creator   User   @relation("ExamCreator", fields: [creatorId], references: [id])
+  creatorId Int
+  students  User[] @relation("ExamEnrollment")
+  quizzes   Quiz[]
+}
+
+model Quiz {
+  id          String     @id @default(cuid())
+  title       String
+  instruction String
+  question    String
+  filename    String?
+  status      QuizStatus @default(OPEN)
+
+  ai_note             String
+  educator_not        String?
+  ai_is_correct       Boolean
+  educator_is_correct Boolean?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  exam        Exam   @relation(fields: [examId], references: [id])
+  examId      Int
+  submissions User[] @relation("QuizSubmission")
 }
