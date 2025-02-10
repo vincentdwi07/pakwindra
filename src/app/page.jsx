@@ -14,7 +14,7 @@ export default function Home() {
       description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laboriosam, recusandae obcaecati nesciunt quis commodi dignissimos nostrum pariatur ullam, atque explicabo, in consequuntur porro. Rerum, ea perferendis adipisci qui iste placeat!",
       status: "graded",
       min_score: 75,
-      score: 48,
+      score: 100,
       user_id: "Pak Windra",
     }
   }

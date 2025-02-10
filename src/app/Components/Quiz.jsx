@@ -1,7 +1,7 @@
 'use client'
 import { useState } from "react"
 
-export default function Task(){
+export default function Quiz(){
     const [activeTab, setActiveTab] = useState('1');
     const [selectedFile, setSelectedFile] = useState(null);
     const tabsData = {
@@ -9,16 +9,44 @@ export default function Task(){
             key: 1,
             instruction: "1. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae porro, quia magni impedit, quaerat exercitationem harum repellat accusamus aut placeat molestias praesentium aperiam sunt architecto suscipit, a explicabo debitis corrupti. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Culpa doloribus neque deserunt nihil, perspiciatis aliquam, eveniet alias pariatur sequi, aliquid id vero repellendus inventore corporis! Expedita placeat rem nisi laborum!",
             educator_note : "Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore esse omnis nam molestiae dolorum reprehenderit iure animi quisquam ipsum, optio odio ratione maiores! At temporibus ea unde ipsam, enim praesentium.",
-            ai_note: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde magnam totam doloremque odit dicta nobis iste nulla! Fuga rerum, in est qui quo laudantium iste vero, quod laborum quos dolore!",
+            ai_note: null,
             educator_is_correct: true,
-            status: "graded"
+            status: "open"
         },
         2: {
-            key: 2,
+            key: 2, 
             instruction: "2. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae porro, quia magni impedit, quaerat exercitationem harum repellat accusamus aut placeat molestias praesentium aperiam sunt architecto suscipit, a explicabo debitis corrupti.",
         },
         3: {
             key: 3,
+            instruction: "3. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae porro, quia magni impedit, quaerat exercitationem harum repellat accusamus aut placeat molestias praesentium aperiam sunt architecto suscipit, a explicabo debitis corrupti.",
+        },
+        4: {
+            key: 4,
+            instruction: "3. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae porro, quia magni impedit, quaerat exercitationem harum repellat accusamus aut placeat molestias praesentium aperiam sunt architecto suscipit, a explicabo debitis corrupti.",
+        },
+        5: {
+            key: 5,
+            instruction: "3. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae porro, quia magni impedit, quaerat exercitationem harum repellat accusamus aut placeat molestias praesentium aperiam sunt architecto suscipit, a explicabo debitis corrupti.",
+        },
+        6: {
+            key: 6,
+            instruction: "3. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae porro, quia magni impedit, quaerat exercitationem harum repellat accusamus aut placeat molestias praesentium aperiam sunt architecto suscipit, a explicabo debitis corrupti.",
+        },
+        7: {
+            key: 7,
+            instruction: "3. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae porro, quia magni impedit, quaerat exercitationem harum repellat accusamus aut placeat molestias praesentium aperiam sunt architecto suscipit, a explicabo debitis corrupti.",
+        },
+        8: {
+            key: 8,
+            instruction: "3. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae porro, quia magni impedit, quaerat exercitationem harum repellat accusamus aut placeat molestias praesentium aperiam sunt architecto suscipit, a explicabo debitis corrupti.",
+        },
+        9: {
+            key: 9,
+            instruction: "3. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae porro, quia magni impedit, quaerat exercitationem harum repellat accusamus aut placeat molestias praesentium aperiam sunt architecto suscipit, a explicabo debitis corrupti.",
+        },
+        10: {
+            key: 10,
             instruction: "3. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae porro, quia magni impedit, quaerat exercitationem harum repellat accusamus aut placeat molestias praesentium aperiam sunt architecto suscipit, a explicabo debitis corrupti.",
         }
     }
@@ -67,9 +95,9 @@ export default function Task(){
                             <div key={tabKey} className={`instruction ${activeTab === tabKey ? 'show' : ''}`}>   
                                 <p>{tabsData[tabKey].instruction}</p>
                                 <form action="">
-                                        <div className="mb-2 text-body-secondary">
-                                            <label htmlFor="file-input">Upload your python file here:</label>
-                                        </div>
+                                    <div className="mb-2 text-body-secondary">
+                                        <label htmlFor="file-input"><i className="bi bi-filetype-py me-1"></i>Upload your python file here:</label>
+                                    </div>
                                     <input
                                         type="file"
                                         accept=".py"
@@ -77,7 +105,12 @@ export default function Task(){
                                         id="file-input"
                                         className="form-control"
                                     />
-                                    <button type="submit" className="btn-submit-file-user">Submit</button>
+                                    {tabsData[tabKey].status === 'submitted' || tabsData[tabKey].status === "grading" || tabsData[tabKey].status === "graded" ? (
+                                        <span className="bg-secondary task-submitted">Submitted</span>
+                                    ):(
+                                        <button type="submit" className="btn-submit-file-user">Submit</button>
+                                    )}
+
                                 </form>  
                                 {tabsData[tabKey].status === 'graded' ?  
                                     <div className={`user-exam-feedback ${tabsData[tabKey].educator_is_correct ? 'correct' : 'false'}`}>

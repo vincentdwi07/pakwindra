@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    transpilePackages: ['@popperjs/core']
-    
+    transpilePackages: ['@popperjs/core'],
+
 };
+
 
 export default nextConfig;
