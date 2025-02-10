@@ -1,4 +1,4 @@
-import Task from "../Components/Task";
+import Quiz from "../Components/Quiz";
 import UserNavbar from "../Components/UserNavbar";
 import "../user.css";
 import Link from "next/link";
@@ -16,7 +16,7 @@ export default function ExamDetail(){
                         <li>/</li>
                         <li>Lesson 1: Belajar Bebek</li>
                     </div>
-                    <Task/>
+                    <Quiz/>
                 </div>
             </div>
         </>

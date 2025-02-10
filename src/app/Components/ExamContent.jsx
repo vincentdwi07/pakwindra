@@ -3,7 +3,38 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 export default function ExamContent({subject, title, description, status, score, user_id, min_score}) {
-    console.log(min_score)
+    console.log(status);
+    const Open = () => 
+        <>
+            <Link href={{  }} style={{ textDecoration: "none" }} className='btn-exam-content-start'>
+                Start <span><i className="bi bi-arrow-right-short"></i></span>
+            </Link>
+        </>
+
+    const Grading = () =>
+        <>
+            <div className='text-body-secondary'>Submitted<i className=" ms-1 bi bi-check-lg"></i></div>
+        </>
+
+    const Graded = () =>
+        <>
+            <Link href={{  }} style={{ textDecoration: "none" }} className='btn-exam-content-start'>
+                Detail <span><i className="bi bi-arrow-right-short"></i></span>
+            </Link>
+        </>
+
+    const ButtonStatus = () => {
+        switch(status){
+            case 'open':
+                return <Open/>;
+            case 'grading':
+                return <Grading/>
+            case 'graded':
+                return <Graded/>
+    
+        }
+    }
+
     return (
         <>
             <div className="exam-content">
@@ -19,7 +50,7 @@ export default function ExamContent({subject, title, description, status, score,
                         <div className="total-task">
                             <p className="m-0 p-0">
                                 <span><i className="bi bi-file-earmark-text me-1"></i></span>
-                                10 Tasks
+                                10 Quizzes
                             </p>
                         </div>
                         {status === "graded" ? (
@@ -29,13 +60,8 @@ export default function ExamContent({subject, title, description, status, score,
                             )
                         }
                     </div>
-                    <div>
-                        <Link href={{  }} style={{ textDecoration: "none" }} className='btn-exam-content-start'>
-                            Start <span><i className="bi bi-arrow-right-short"></i></span>
-                        </Link>
-                    </div>
+                    <ButtonStatus statusparam={status}/>
                 </div>
-
             </div>  
         </>
     )
