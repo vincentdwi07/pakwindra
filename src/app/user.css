@@ -1,3 +1,10 @@
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
 .user-login{
   height: 100vh;
   width: 100%;
@@ -13,6 +20,7 @@
   justify-content: center;
   position: relative;
 }
+
 
 .box div{
   position: absolute;
@@ -104,11 +112,52 @@
   padding: 5%;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.1);}
+
+.user-login-right-side{
+  background-color: white;
+  height: 100%;
+  flex: 0 0 calc(45%);
+  border-radius: 15px 0 0 15px;
+  display: flex;
+  flex-direction: column; 
+  padding: 5%;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.1);
 }
 
 .user-login-right-side img{
   height: 40px;
+}
+
+.user-register-left-side{
+  flex: 0 0 calc(50%);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.register-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 1rem;
+  row-gap: 0;
+  width: 100%;
+}
+
+.user-register-right-side{
+  background-color: white;
+  height: 100%;
+  flex: 0 0 calc(50%);
+  border-radius: 15px 0 0 15px;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.1);
 }
 
 .user-login-form input[type="text"], input[type="password"]{
@@ -117,6 +166,18 @@
   border-bottom: 1.5px solid gray;
   padding-left: 25px;
   padding-bottom: 5px;
+}
+
+.role-input-user{
+  border: 0;
+  border-bottom: 1.5px solid gray;
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-block: 3px;
+}
+
+.role-input-user:focus{
+  outline: none;
 }
 
 .email-input-user{
@@ -137,10 +198,43 @@
   background-position: 0 center;
 }
 
+.role-input-user {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='gray' class='bi bi-person-fill-gear' viewBox='0 0 16 16'%3E%3Cpath d='M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-9 8c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4m9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382zM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 5 center;
+}
+
+.name-input-user:focus,
 .email-input-user:focus,
 .password-input-user:focus{
   border-bottom: 1.5px solid black !important;
   transition: all 0.2s ease-in-out;
+}
+
+/* HTML: <div class="loader"></div> */
+.loading-bar {
+  width: 20px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 4px solid #ffffff;
+  animation:
+    l20-1 0.8s infinite linear alternate,
+    l20-2 1.6s infinite linear;
+}
+@keyframes l20-1{
+   0%    {clip-path: polygon(50% 50%,0       0,  50%   0%,  50%    0%, 50%    0%, 50%    0%, 50%    0% )}
+   12.5% {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100%   0%, 100%   0%, 100%   0% )}
+   25%   {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100% 100%, 100% 100%, 100% 100% )}
+   50%   {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100% 100%, 50%  100%, 0%   100% )}
+   62.5% {clip-path: polygon(50% 50%,100%    0, 100%   0%,  100%   0%, 100% 100%, 50%  100%, 0%   100% )}
+   75%   {clip-path: polygon(50% 50%,100% 100%, 100% 100%,  100% 100%, 100% 100%, 50%  100%, 0%   100% )}
+   100%  {clip-path: polygon(50% 50%,50%  100%,  50% 100%,   50% 100%,  50% 100%, 50%  100%, 0%   100% )}
+}
+@keyframes l20-2{ 
+  0%    {transform:scaleY(1)  rotate(0deg)}
+  49.99%{transform:scaleY(1)  rotate(135deg)}
+  50%   {transform:scaleY(-1) rotate(0deg)}
+  100%  {transform:scaleY(-1) rotate(-135deg)}
 }
 
 
@@ -440,10 +534,20 @@
   .user-login-left-side{
     display: none;
     flex: 0;
+  }
 
+  .user-register-left-side{
+    display: none;
+    flex: 0;
   }
 
   .user-login-right-side{
+    width: 100% !important;
+    flex: 1;
+    border-radius: 0;
+  }
+
+  .user-register-right-side{
     width: 100% !important;
     flex: 1;
     border-radius: 0;
@@ -452,4 +556,10 @@
   .tab button{
     flex: 0 1 calc(20% - 10px);
   }
+
+  .register-grid {
+    grid-template-columns: 1fr;
+    gap: 0; /* smaller gap on mobile */
+  }
 }
+
