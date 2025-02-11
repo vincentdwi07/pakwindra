@@ -42,9 +42,23 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  examsCreated    Exam[] @relation("ExamCreator")
-  examsEnrolled   Exam[] @relation("ExamEnrollment")
-  quizSubmissions Quiz[] @relation("QuizSubmission")
+  examsCreated    Exam[]    @relation("ExamCreator")
+  examsEnrolled   Exam[]    @relation("ExamEnrollment")
+  quizSubmissions Quiz[]    @relation("QuizSubmission")
+  Session         Session[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token        String   @unique
+  expires      DateTime
+  lastActivity DateTime @default(now())
+  userAgent    String?
+  ipAddress    String?
+
+  @@index([userId])
 }
 
 model Exam {
