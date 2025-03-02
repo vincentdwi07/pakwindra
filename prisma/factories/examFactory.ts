@@ -16,7 +16,7 @@ export const createExam = (creatorId: number) => {
             from: startDate,
             to: faker.date.future({ years: 1, refDate: startDate })
         }),
-        minScore: faker.number.float({ min: 60, max: 90, precision: 0.1 }),
+        minScore: faker.number.float({ min: 60, max: 90 }),
         creatorId,
     }
 }

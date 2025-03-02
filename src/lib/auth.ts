@@ -1,13 +1,17 @@
-import { PrismaAdapter } from "@auth/prisma-adapter"
+import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import {NextAuthOptions} from "next-auth";
-import { PrismaClient } from "@prisma/client";
-import { db } from "./db";
-
-import {compare} from "bcryptjs";
+import { PrismaClient } from "@prisma/client"
+import db from "@/lib/db"
+import bcrypt from "bcryptjs"
 
 export const authOptions: NextAuthOptions = {
-    adapter: PrismaAdapter(db),
+    // Remove the PrismaAdapter for now since we're using JWT
+    session: {
+        strategy: "jwt",
+    },
+    pages: {
+        signIn: "/auth/login",
+    },
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -17,26 +21,26 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
-                    throw new Error("Invalid credentials");
+                    throw new Error("Invalid credentials")
                 }
 
                 const user = await db.user.findUnique({
                     where: {
                         email: credentials.email
                     }
-                });
+                })
 
                 if (!user) {
-                    throw new Error("User not found");
+                    throw new Error("Invalid credentials")
                 }
 
-                const isPasswordValid = await compare(
+                const isPasswordValid = await bcrypt.compare(
                     credentials.password,
                     user.password
-                );
+                )
 
                 if (!isPasswordValid) {
-                    throw new Error("Invalid password");
+                    throw new Error("Invalid credentials")
                 }
 
                 return {
@@ -44,20 +48,10 @@ export const authOptions: NextAuthOptions = {
                     email: user.email,
                     name: user.name,
                     role: user.role,
-                };
+                }
             }
         })
     ],
-    secret: process.env.NEXTAUTH_SECRET,
-    session: {
-        //strategy: "database",
-        //maxAge: 30 * 24 * 60 * 60
-        strategy: "jwt"
-    },
-    pages: {
-        signIn: "/auth/signin",
-        verifyRequest: "/auth/verify-request"
-    },
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
@@ -79,16 +73,5 @@ export const authOptions: NextAuthOptions = {
                 }
             }
         }
-    },
-    events: {
-        async signIn(message) {
-            console.log("Signed in!", { message });
-        },
-        async signOut(message) {
-            console.log("Signed out!", { message });
-        },
-        async createUser(message) {
-            console.log("User created!", { message });
-        }
     }
-};
+}

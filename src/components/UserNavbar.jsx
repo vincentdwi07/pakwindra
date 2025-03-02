@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
+import LogoutButton from "@/components/LogoutButton";
 
 export default function UserNavbar() {
     const [showOffcanvas, setShowOffcanvas] = useState(false);
@@ -12,7 +13,7 @@ export default function UserNavbar() {
         {
             href: '/',
             icon: 'bi-house-door-fill',
-            label: 'Home'
+            label: 'Homess'
         },
         {
             href: '/dashboard',
@@ -36,7 +37,7 @@ export default function UserNavbar() {
     return(
         <>
             <div className="d-flex flex-column user-navbar d-none d-sm-flex shadow">
-                <Link href="/" className="d-block p-3 link-body-emphasis d-flex justify-content-center align-items-center text-decoration-none border-bottom" title="Icon-only" data-bs-toggle="tooltip" data-bs-placement="right">
+                <Link href="/public" className="d-block p-3 link-body-emphasis d-flex justify-content-center align-items-center text-decoration-none border-bottom" title="Icon-only" data-bs-toggle="tooltip" data-bs-placement="right">
                     <img src="user-login-logo.svg" style={{ height: '30px' }} alt=""/>
                     <span className="visually-hidden">Icon-only</span>
                 </Link>
@@ -74,7 +75,7 @@ export default function UserNavbar() {
                     <ul className="dropdown-menu w-100 text-small shadow">
                         <li><a className="dropdown-item" href="#">Profile</a></li>
                         <li><hr className="dropdown-divider" /></li>
-                        <li><a className="dropdown-item" href="#">Sign out</a></li>
+                        <LogoutButton />
                     </ul>
                 </div>
             </div>
@@ -140,7 +141,7 @@ export default function UserNavbar() {
                         <ul className="dropdown-menu w-100 text-small shadow">
                             <li><a className="dropdown-item" href="#">Profile</a></li>
                             <li><hr className="dropdown-divider" /></li>
-                            <li><a className="dropdown-item" href="#">Sign out</a></li>
+                            <LogoutButton />
                         </ul>
                     </div>
                 </div>

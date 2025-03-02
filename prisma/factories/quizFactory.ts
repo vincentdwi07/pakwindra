@@ -12,9 +12,6 @@ export const createQuiz = (examId: number) => ({
         QuizStatus.GRADING,
         QuizStatus.GRADED
     ]),
-    ai_note: faker.lorem.paragraph(),
-    educator_not: faker.helpers.maybe(() => faker.lorem.paragraph(), { probability: 0.7 }),
-    ai_is_correct: faker.datatype.boolean(),
-    educator_is_correct: faker.helpers.maybe(() => faker.datatype.boolean(), { probability: 0.6 }),
+    maxScore: faker.number.float({ min: 80, max: 100, fractionDigits: 1 }),
     examId,
 })

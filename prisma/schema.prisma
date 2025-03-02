@@ -35,16 +35,30 @@ model User {
   email    String  @unique
   name     String?
   password String
-
-  role Role
+  role     Role
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  examsCreated    Exam[] @relation("ExamCreator")
-  examsEnrolled   Exam[] @relation("ExamEnrollment")
-  quizSubmissions Quiz[] @relation("QuizSubmission")
+  examsCreated    Exam[]           @relation("ExamCreator")
+  examsEnrolled   Exam[]           @relation("ExamEnrollment")
+  quizSubmissions QuizSubmission[]
+  Session         Session[]
+  Quiz            Quiz[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token        String   @unique
+  expires      DateTime
+  lastActivity DateTime @default(now())
+  userAgent    String?
+  ipAddress    String?
+
+  @@index([userId])
 }
 
 model Exam {
@@ -54,8 +68,7 @@ model Exam {
   status      ExamStatus @default(OPEN)
   startDate   DateTime
   endDate     DateTime
-
-  minScore Float @default(80)
+  minScore    Float      @default(80)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -65,26 +78,53 @@ model Exam {
   creatorId Int
   students  User[] @relation("ExamEnrollment")
   quizzes   Quiz[]
+
+  @@index([creatorId])
 }
 
 model Quiz {
-  id          String     @id @default(cuid())
+  id          Int        @id @default(autoincrement())
   title       String
   instruction String
   question    String
   filename    String?
   status      QuizStatus @default(OPEN)
-
-  ai_note             String
-  educator_not        String?
-  ai_is_correct       Boolean
-  educator_is_correct Boolean?
+  maxScore    Float      @default(100) // Maximum score possible for this quiz
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  exam        Exam   @relation(fields: [examId], references: [id])
+  exam        Exam             @relation(fields: [examId], references: [id])
   examId      Int
-  submissions User[] @relation("QuizSubmission")
+  submissions QuizSubmission[]
+  User        User?            @relation(fields: [userId], references: [id])
+  userId      Int?
+
+  @@index([examId])
+}
+
+model QuizSubmission {
+  id       Int     @id @default(autoincrement())
+  fileUrl  String // URL to the uploaded file
+  fileName String // Original file name
+  score    Float? // Student's score for this submission
+  feedback String? // Feedback from educator or AI
+
+  isCorrect Boolean? // Whether the submission is correct
+  aiVerdict Boolean? // AI's assessment of correctness
+  aiNote    String? // AI's notes/feedback
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  student   User @relation(fields: [studentId], references: [id])
+  studentId Int
+  quiz      Quiz @relation(fields: [quizId], references: [id])
+  quizId    Int
+
+  @@unique([studentId, quizId]) // Ensures one submission per student per quiz
+  @@index([studentId])
+  @@index([quizId])
 }

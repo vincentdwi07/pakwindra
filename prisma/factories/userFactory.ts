@@ -5,7 +5,7 @@ import * as bcrypt from 'bcryptjs'
 export const createUser = async () => ({
     email: faker.internet.email(),
     name: faker.person.fullName(),
-    password: await bcrypt.hash('password123', 10),
+    password: await bcrypt.hash('Admin123', 10),
     role: faker.helpers.arrayElement([Role.EDUCATOR, Role.STUDENT]),
 })
 
