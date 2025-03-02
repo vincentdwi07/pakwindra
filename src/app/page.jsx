@@ -52,7 +52,7 @@ export default async function Home() {
   return (  
     <>
       
-      <div className="user-dashboard">
+      <div className="user-dashboard position-relative">
         <UserNavbar/>
         <div className="user-dashboard-content">
             <h3>Welcome, {session.user.name}!</h3>
@@ -80,7 +80,7 @@ export default async function Home() {
                   status={exam.status}
                   score={exam.quizzes[0]?.submissions[0]?.score || null} // Simplified, you might want to calculate average
                   userId={exam.creatorId}
-                  minScore={exam.minScore}
+                  // minScore={exam.minScore}
                   startDate={exam.startDate}
                   endDate={exam.endDate}
                   quizCount={exam.quizzes.length}
@@ -89,7 +89,7 @@ export default async function Home() {
           ))}
 
           {exams.length === 0 && (
-              <div className="text-center py-5 text-muted">
+              <div className="no-exam text-muted">
                 <i className="bi bi-inbox-fill fs-1 d-block mb-3"></i>
                 <h5>No exams available</h5>
                 <p>You don't have any exams assigned yet.</p>

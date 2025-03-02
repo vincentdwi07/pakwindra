@@ -47,6 +47,7 @@ export async function register(data: RegisterInput) {
         )
 
         return {
+            
             success: true,
             user: {
                 id: user.id,

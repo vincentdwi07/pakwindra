@@ -22,11 +22,11 @@ export async function middleware(request: NextRequest) {
     }
 
     // Protected routes - if not logged in, redirect to login
-    /*if (!token && path.startsWith('/dashboard')) {
-        const url = new URL('/auth/login', request.url)
-        url.searchParams.set('callbackUrl', path)
-        return NextResponse.redirect(url)
-    }*/
+    // if (!token && path.startsWith('/dashboard')) {
+    //     const url = new URL('/auth/login', request.url)
+    //     url.searchParams.set('callbackUrl', path)
+    //     return NextResponse.redirect(url)
+    // }
 
     return NextResponse.next()
 }

@@ -32,7 +32,7 @@ export default function UserRegister() {
           </div>
         </div>
         <div className="user-register-right-side">
-          <Image className="mb-3" width={40} height={40} src="user-login-logo.svg" alt=""/>
+          <Image className="mb-3" width={40} height={40} src="../user-login-logo.svg" alt=""/>
           <h2 className="fw-bold">Create Your Account</h2>
           <p className="mb-4" style={{fontSize: "14px"}}>Please enter your Details</p>
           <RegisterForm />

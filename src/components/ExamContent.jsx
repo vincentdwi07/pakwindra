@@ -8,7 +8,7 @@ export default function ExamContent({
                                         status,
                                         score,
                                         userId,
-                                        minScore,
+                                        // minScore,
                                         startDate,
                                         endDate,
                                         quizCount,
@@ -113,7 +113,7 @@ export default function ExamContent({
                             </p>
                         </div>
                         {status === "GRADED" && score !== null ? (
-                            <div className={`user-exam-score text-light ${score < min_score ? 'bg-danger' : 'bg-success'}`}><span><i className="bi bi-file-earmark-check-fill me-2"></i></span>{score.toFixed(1)}</div>
+                            ""// <div className={`user-exam-score text-light ${score < min_score ? 'bg-danger' : 'bg-success'}`}><span><i className="bi bi-file-earmark-check-fill me-2"></i></span>{score.toFixed(1)}</div>
                         ):(
                             ''
                         )
