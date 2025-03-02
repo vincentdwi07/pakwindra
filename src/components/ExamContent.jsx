@@ -44,7 +44,7 @@ export default function ExamContent({
     const Open = () => (
         <Link
             href={`/exam/${id}`}
-            className='btn btn-primary'
+            className='btn btn-outline-dark'
         >
             Start <i className="bi bi-arrow-right-short"></i>
         </Link>
@@ -61,7 +61,7 @@ export default function ExamContent({
     const Graded = () => (
         <Link
             href={`/exam/${id}/result`}
-            className='btn btn-outline-primary'
+            className='btn btn-outline-dark'
         >
             Detail <i className="bi bi-arrow-right-short"></i>
         </Link>
