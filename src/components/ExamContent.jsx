@@ -51,9 +51,11 @@ export default function ExamContent({
     )
 
     const Grading = () => (
-        <div className='text-secondary'>
-            Submitted <i className="bi bi-check-lg"></i>
-        </div>
+        <Link
+            href={`/exam/${id}`}
+            className='text-secondary'>
+            Submitted (in-grading) <i className="bi bi-check-lg"></i>
+        </Link>
     )
 
     const Graded = () => (
