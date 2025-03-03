@@ -8,7 +8,7 @@ export default function ExamContent({
                                         status,
                                         score,
                                         userId,
-                                        minScore,
+                                        // minScore,
                                         startDate,
                                         endDate,
                                         quizCount,
@@ -44,7 +44,7 @@ export default function ExamContent({
     const Open = () => (
         <Link
             href={`/exam/${id}`}
-            className='btn btn-primary'
+            className='btn btn-outline-dark'
         >
             Start <i className="bi bi-arrow-right-short"></i>
         </Link>
@@ -61,7 +61,7 @@ export default function ExamContent({
     const Graded = () => (
         <Link
             href={`/exam/${id}/result`}
-            className='btn btn-outline-primary'
+            className='btn btn-outline-dark'
         >
             Detail <i className="bi bi-arrow-right-short"></i>
         </Link>
@@ -113,7 +113,7 @@ export default function ExamContent({
                             </p>
                         </div>
                         {status === "GRADED" && score !== null ? (
-                            <div className={`user-exam-score text-light ${score < min_score ? 'bg-danger' : 'bg-success'}`}><span><i className="bi bi-file-earmark-check-fill me-2"></i></span>{score.toFixed(1)}</div>
+                            ""// <div className={`user-exam-score text-light ${score < min_score ? 'bg-danger' : 'bg-success'}`}><span><i className="bi bi-file-earmark-check-fill me-2"></i></span>{score.toFixed(1)}</div>
                         ):(
                             ''
                         )

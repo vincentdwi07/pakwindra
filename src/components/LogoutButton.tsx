@@ -28,7 +28,7 @@ export default function LogoutButton() {
                 type={ 'button'}
                 className="dropdown-item"
                 onClick={handleLogout}>
-                Sign outsss
+                Sign out
             </button>
         </li>
     )

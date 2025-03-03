@@ -8,25 +8,28 @@ export async function middleware(request: NextRequest) {
         secret: process.env.NEXTAUTH_SECRET,
     })
 
+    console.log('Token dalam middleware:', token)
+
     const path = request.nextUrl.pathname
+    console.log('Current path:', path)
 
     // Auth routes - if logged in, redirect to dashboard
     if (token && (path === '/auth/login' || path === '/auth/register')) {
         const role = token.role as 'EDUCATOR' | 'STUDENT'
         return NextResponse.redirect(
             new URL(
-                role === 'EDUCATOR' ? '/dashboard/educator' : '/dashboard/student',
+                role === 'EDUCATOR' ? '/dashboard/educator' : '/',
                 request.url
             )
         )
     }
 
     // Protected routes - if not logged in, redirect to login
-    /*if (!token && path.startsWith('/dashboard')) {
-        const url = new URL('/auth/login', request.url)
-        url.searchParams.set('callbackUrl', path)
-        return NextResponse.redirect(url)
-    }*/
+    // if (!token && path.startsWith('/dashboard')) {
+    //     const url = new URL('/auth/login', request.url)
+    //     url.searchParams.set('callbackUrl', path)
+    //     return NextResponse.redirect(url)
+    // }
 
     return NextResponse.next()
 }
@@ -34,7 +37,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         '/auth/login',
-        '/auth/register',
+        // '/auth/register',
         '/dashboard/:path*'
     ]
 }

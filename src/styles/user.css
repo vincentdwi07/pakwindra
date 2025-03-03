@@ -515,6 +515,18 @@ input:-webkit-autofill:active {
   border-radius: 5px;
 }
 
+.no-exam{
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  top: 0;
+  left: 0;
+}
+
 /* RESPONSIVE */
 @media(max-width: 576px){
   .user-dashboard-content{

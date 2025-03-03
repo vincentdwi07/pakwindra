@@ -45,7 +45,8 @@ export default function RegisterForm() {
             if (result.user?.role === 'EDUCATOR') {
                 router.push('/dashboard/educator')
             } else {
-                router.push('/dashboard/student')
+                // router.push('/dashboard/student')
+                router.push('/')
             }
         } catch (err) {
             setError('An unexpected error occurred')

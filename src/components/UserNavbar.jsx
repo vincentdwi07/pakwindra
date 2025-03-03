@@ -13,7 +13,7 @@ export default function UserNavbar() {
         {
             href: '/',
             icon: 'bi-house-door-fill',
-            label: 'Homess'
+            label: 'Home'
         },
         {
             href: '/dashboard',
