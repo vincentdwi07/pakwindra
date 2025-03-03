@@ -8,19 +8,11 @@ export default function LogoutButton() {
     const router = useRouter()
 
     const handleLogout = async () => {
-        const isLoggedOut = await signOut();
-        let result = await logout();
-        if (isLoggedOut) {
-            router.refresh()
-            router.push('/auth/login')
-        }
-        /*if (result.success) {
-            router.refresh()
-            router.push('/auth/login')
-        }else {
-            throw new Error("Invalid credentials")
-        }*/
-    }
+        await signOut({ redirect: false });
+        await logout();
+        router.refresh();
+        router.push('/auth/login');
+    };
 
     return (
         <li>

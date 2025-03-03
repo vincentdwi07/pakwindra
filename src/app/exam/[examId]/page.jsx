@@ -7,11 +7,11 @@ import Quiz from "@/components/Quiz"
 import UserNavbar from "@/components/UserNavbar"
 import Link from "next/link"
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 export default async function ExamDetail({ params }) {
     // Get the user session
     const session = await getServerSession(authOptions)
-
-
 
     if (!session?.user) {
         redirect('/login')

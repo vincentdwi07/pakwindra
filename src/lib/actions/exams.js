@@ -67,7 +67,7 @@ export const getExams = cache(async (userId, userRole) => {
             }
         }
     })
-})
+}, { next: {tags : ['exam']}})
 
 export const processExamForDisplay = (
     exam,
@@ -197,7 +197,7 @@ export const getExamById = cache(async (examId, userId, userRole) => {
     }
 
     return processedExam
-})
+}, { next: {tags : ['examId']}})
 
 // Helper function to calculate exam progress
 const calculateExamProgress = (exam, userId) => {

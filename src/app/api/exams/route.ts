@@ -1,12 +1,23 @@
 import { NextResponse } from 'next/server'
-import { getExams, getActiveExams } from '@/lib/exam'
-import { Role } from '@prisma/client'
+import { getExams } from '@/lib/exam'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/authOptions'
+
 
 export async function GET(request: Request) {
     try {
-        // In a real app, get these from your auth system
-        const userId = 1 // example user ID
-        const userRole = Role.STUDENT // or Role.EDUCATOR
+        // Ambil session user dari NextAuth
+        const session = await getServerSession(authOptions)
+
+        if (!session) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            )
+        }
+
+        const userId = session.user.id
+        const userRole = session.user.role
 
         const exams = await getExams(userId, userRole)
 

@@ -456,8 +456,8 @@ input:-webkit-autofill:active {
 }
 
 .tab button.active {
-  background-color:#212529;
   color: white;
+  background-color: black;
   transition: all 0.2s ease;
 }
 

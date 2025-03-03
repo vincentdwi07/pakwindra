@@ -124,7 +124,7 @@
     "app/types/**/*.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "src/app/api/quiz/route.js"  ],
   "exclude": [
     "node_modules"
   ]

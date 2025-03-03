@@ -84,9 +84,7 @@ model Exam {
 
 model Quiz {
   id          Int        @id @default(autoincrement())
-  title       String
   instruction String
-  question    String
   filename    String?
   status      QuizStatus @default(OPEN)
   maxScore    Float      @default(100) // Maximum score possible for this quiz
