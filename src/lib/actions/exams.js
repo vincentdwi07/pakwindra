@@ -2,7 +2,7 @@ import { db } from '@/lib/db'
 import { cache } from 'react'
 
 export const getExams = cache(async (userId, userRole) => {
-    const now = new Date('2025-03-02T09:30:24Z') // Using provided current time
+    const now = new Date() // Using provided current time
 
     const baseQuery = {
         include: {
@@ -115,13 +115,12 @@ export const getCurrentUserExams = cache(async (userId, userRole) => {
 })
 
 export const getExamById = cache(async (examId, userId, userRole) => {
-    const now = new Date() // Using the provided current time
+    const now = new Date()
 
     const exam = await db.exam.findFirst({
         where: {
             id: examId,
             /*AND: [
-                // Ensure user has access to this exam
                 {
                     OR: [
                         { creatorId: userRole === 'EDUCATOR' ? userId : undefined },
@@ -134,7 +133,6 @@ export const getExamById = cache(async (examId, userId, userRole) => {
                         }
                     ]
                 },
-                // For students, ensure exam has started
                 userRole === 'STUDENT'
                     ? {
                         startDate: {
@@ -175,10 +173,15 @@ export const getExamById = cache(async (examId, userId, userRole) => {
                             isCorrect: true,
                             feedback: true,
                             aiNote: true,
-                            fileUrl: true,
-                            fileName: true,
-                            createdAt: true
-                        }
+                            answer: true,
+                            status: true,
+                            createdAt: true,
+                            updatedAt: true
+                        },
+                        orderBy: {
+                            updatedAt: 'desc'
+                        },
+                        take: 1 // Gunakan take: 1 sebagai pengganti slice
                     }
                 }
             }
@@ -192,12 +195,20 @@ export const getExamById = cache(async (examId, userId, userRole) => {
     // Process exam data
     const processedExam = {
         ...exam,
+        quizzes: exam.quizzes.map(quiz => ({
+            ...quiz,
+            // Tidak perlu slice karena sudah menggunakan take: 1
+            submissions: quiz.submissions || []
+        })),
         progress: calculateExamProgress(exam, userId),
         timing: getExamTiming(exam, now)
     }
 
     return processedExam
-}, { next: {tags : ['examId']}})
+}, { 
+    tags: ['examId', 'exam-submission'] // Hapus revalidate: 0
+})
+
 
 // Helper function to calculate exam progress
 const calculateExamProgress = (exam, userId) => {

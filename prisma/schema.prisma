@@ -45,7 +45,6 @@ model User {
   examsEnrolled   Exam[]           @relation("ExamEnrollment")
   quizSubmissions QuizSubmission[]
   Session         Session[]
-  Quiz            Quiz[]
 }
 
 model Session {
@@ -86,8 +85,7 @@ model Quiz {
   id          Int        @id @default(autoincrement())
   instruction String
   filename    String?
-  status      QuizStatus @default(OPEN)
-  maxScore    Float      @default(100) // Maximum score possible for this quiz
+  maxScore    Float      @default(100)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -96,22 +94,18 @@ model Quiz {
   exam        Exam             @relation(fields: [examId], references: [id])
   examId      Int
   submissions QuizSubmission[]
-  User        User?            @relation(fields: [userId], references: [id])
-  userId      Int?
 
   @@index([examId])
 }
 
 model QuizSubmission {
-  id       Int     @id @default(autoincrement())
-  fileUrl  String // URL to the uploaded file
-  fileName String // Original file name
-  score    Float? // Student's score for this submission
-  feedback String? // Feedback from educator or AI
-
-  isCorrect Boolean? // Whether the submission is correct
-  aiVerdict Boolean? // AI's assessment of correctness
-  aiNote    String? // AI's notes/feedback
+  id        Int         @id @default(autoincrement())
+  answer    String?     // File name or text answer
+  score     Float?      // Student's score
+  feedback  String?     // Feedback from educator or AI
+  isCorrect Boolean?    // Manual/AI assessment
+  aiNote    String?     // AI comment
+  status    QuizStatus  @default(OPEN)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -122,7 +116,7 @@ model QuizSubmission {
   quiz      Quiz @relation(fields: [quizId], references: [id])
   quizId    Int
 
-  @@unique([studentId, quizId]) // Ensures one submission per student per quiz
+  @@unique([studentId, quizId])
   @@index([studentId])
   @@index([quizId])
 }

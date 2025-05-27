@@ -63,7 +63,7 @@ export default function LoginForm() {
             <div className="d-flex flex-column mb-3 ">
                 <label htmlFor="email" className="pb-1">Email</label>
                 <input {...register('email')}
-                    type="text" className="email-input-user" id="email" name="email" placeholder="Input your e-mail"/>
+                    type="text" className="email-input-user text-black" id="email" name="email" placeholder="Input your e-mail"/>
                 {errors.email && (
                     <p className="mt-1 text-sm text-danger">{errors.email.message}</p>
                 )}
@@ -73,7 +73,7 @@ export default function LoginForm() {
                     <label htmlFor="">Password</label>
                 </div>
                 <input {...register('password')}
-                    type="password" className="password-input-user" placeholder="Input your password" id="password" name="password"/>
+                    type="password" className="password-input-user text-black" placeholder="Input your password" id="password" name="password"/>
                 {errors.password && (
                     <p className="mt-1 text-sm text-danger">{errors.password.message}</p>
                 )}
@@ -83,7 +83,7 @@ export default function LoginForm() {
             </div>
 
             <div className="d-flex mb-5 gap-1">
-                <input type="checkbox"/>
+                <input type="checkbox" className='remember-me-check'/>
                 <label htmlFor="">Remember Me</label>
             </div>
             <button type="submit"

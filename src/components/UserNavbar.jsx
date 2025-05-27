@@ -37,7 +37,7 @@ export default function UserNavbar() {
     return(
         <>
             <div className="d-flex flex-column user-navbar d-none d-sm-flex shadow">
-                <Link href="/public" className=" p-3 link-body-emphasis d-flex justify-content-center align-items-center text-decoration-none border-bottom" title="Icon-only" data-bs-toggle="tooltip" data-bs-placement="right">
+                <Link href="/" className=" p-3 link-body-emphasis d-flex justify-content-center align-items-center text-decoration-none border-bottom" title="Icon-only" data-bs-toggle="tooltip" data-bs-placement="right">
                     <img src="../user-login-logo.svg" style={{ height: '30px' }} alt=""/>
                     <span className="visually-hidden">Icon-only</span>
                 </Link>

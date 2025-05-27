@@ -9,15 +9,14 @@ import Link from "next/link"
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
+
 export default async function ExamDetail({ params }) {
-    // Get the user session
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
         redirect('/login')
     }
 
-    // Get user details
     const user = await db.user.findUnique({
         where: { email: session.user.email }
     })
@@ -26,18 +25,19 @@ export default async function ExamDetail({ params }) {
         redirect('/login')
     }
 
-    // Safely parse the examId
-    const { examId } = await params
+    const { examId } = params
     if (isNaN(examId)) {
         redirect('/')
     }
-    // Get exam details
-    const exam = await getExamById(parseInt(examId), user.id, user.role)
 
-    console.log(exam)
-    /*if (!exam) {
+    const exam = await getExamById(parseInt(examId), user.id, user.role)
+    
+    if (!exam) {
         redirect('/')
-    }*/
+    }
+
+    // Add timestamp untuk force re-render
+    const timestamp = Date.now()
 
     return (
         <div className="exam-detail">
@@ -45,15 +45,16 @@ export default async function ExamDetail({ params }) {
             <div className="exam-detail-content">
                 <div className="nav-exam-detail-content">
                     <li className="nax-exam-detail-back">
-                        <Link  className="text-black" href="/">Home</Link>
+                        <Link className="text-black" href="/">Home</Link>
                     </li>
                     <li>/</li>
                     <li>{exam.title}</li>
-                    {/*{exam.description && (
-                        <p className="text-muted">{exam.description}</p>
-                    )}*/}
                 </div>
-                <Quiz exam={exam} userId={user.id} />
+                <Quiz 
+                    exam={exam} 
+                    userId={user.id}
+                    key={timestamp}
+                />
             </div>
         </div>
     )

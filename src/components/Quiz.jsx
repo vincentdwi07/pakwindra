@@ -1,242 +1,335 @@
 'use client'
 import { useState, useEffect } from "react"
 import { useRouter } from 'next/navigation'
+import Editor from "@monaco-editor/react"
 import '../styles/user.css'
-import path from "path"
 
 export default function Quiz({ exam, userId }) {
     const router = useRouter()
     const [activeTab, setActiveTab] = useState(exam.quizzes[0]?.id.toString())
-    const [selectedFile, setSelectedFile] = useState(null)
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
     const [submitting, setSubmitting] = useState(false)
-    const [fileContent, setFileContent] = useState('');
+    const [codes, setCodes] = useState({})
 
+    // Debug initial data
+    useEffect(() => {
+        console.log('Initial Quiz Data:', {
+            examId: exam.id,
+            quizzes: exam.quizzes.map(quiz => ({
+                quizId: quiz.id,
+                submissions: quiz.submissions
+            }))
+        });
+    }, []);
 
-    // Convert quizzes array to an object for easier access
-    const quizzesData = exam.quizzes.reduce((acc, quiz) => {
-        const submission = quiz.submissions.find(sub => sub.studentId === userId)
-        acc[quiz.id] = {
-            key: quiz.id,
-            instruction: quiz.instruction,
-            status: quiz.status,
-            submission: submission,
-            educator_note: submission?.feedback,
-            ai_note: submission?.aiNote,
-            educator_is_correct: submission?.isCorrect,
-            submission_file_name : submission?.fileName,
-            submission_file_url : submission?.fileUrl
-        }
-        return acc
-    }, {})
+    const [quizzesData, setQuizzesData] = useState(() => {
+        const initialData = exam.quizzes.reduce((acc, quiz) => {
+            const submission = quiz.submissions[0] // Ambil submission pertama (terbaru)
+            console.log(`Initializing Quiz ${quiz.id}:`, {
+                submission,
+                status: submission?.status,
+                hasSubmission: !!submission
+            });
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-    
-        if (file) {
-            if (file.name.endsWith('.py')) {
-                setSelectedFile(file);
-                setError('');
-    
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    setFileContent(e.target.result);
-                    console.log("Isi file:", e.target.result);
-                };
-                reader.readAsText(file);
-            } else {
-                setSelectedFile(null);
-                setError('Only Python (.py) files are allowed!');
+            acc[quiz.id] = {
+                key: quiz.id,
+                instruction: quiz.instruction,
+                submissionStatus: submission?.status || 'OPEN',
+                submission: submission || null,
+                educator_note: submission?.feedback,
+                ai_note: submission?.aiNote,
+                educator_is_correct: submission?.isCorrect,
+                submitted_code: submission?.answer || '# Drop your code here',
             }
-        }
-    };
-    
+            return acc
+        }, {})
+
+        console.log('Initial Quizzes Data:', initialData);
+        return initialData;
+    })
+
+    useEffect(() => {
+        const initialCodes = {}
+        Object.entries(quizzesData).forEach(([quizId, quiz]) => {
+            initialCodes[quizId] = quiz.submitted_code
+        })
+        console.log('Setting initial codes:', initialCodes);
+        setCodes(initialCodes)
+    }, [quizzesData])
+
+    useEffect(() => {
+        console.log('Exam or userId changed:', {
+            examId: exam.id,
+            userId,
+            timestamp: new Date().toISOString()
+        });
+
+        const newQuizzesData = exam.quizzes.reduce((acc, quiz) => {
+            const submission = quiz.submissions[0] // Ambil submission pertama (terbaru)
+            acc[quiz.id] = {
+                key: quiz.id,
+                instruction: quiz.instruction,
+                submissionStatus: submission?.status || 'OPEN',
+                submission: submission || null,
+                educator_note: submission?.feedback,
+                ai_note: submission?.aiNote,
+                educator_is_correct: submission?.isCorrect,
+                submitted_code: submission?.answer || '# Drop your code here',
+            }
+            return acc
+        }, {})
+
+        console.log('Updating quizzesData:', newQuizzesData);
+        setQuizzesData(newQuizzesData)
+    }, [exam, userId])
+
+    const handleCodeChange = (value, quizId) => {
+        setCodes(prev => ({
+            ...prev,
+            [quizId]: value || ""
+        }))
+    }
 
     const handleSubmit = async (event, quizId) => {
         event.preventDefault()
-        if (!selectedFile) {
-            setError('Please select a file first')
+        console.log('Submitting quiz:', {
+            quizId,
+            currentTime: new Date().toISOString()
+        });
+
+        const currentCode = codes[quizId]
+        if (!currentCode?.trim()) {
+            setError('Please enter your code before submitting')
             return
         }
-    
+
         setSubmitting(true)
-        setError(null) // Reset error state
-    
+        setError('')
+        setSuccess('')
+
         try {
-            const formData = new FormData()
-            formData.append('file', selectedFile)
-            formData.append('quizId', quizId)
-            formData.append('examId', exam.id)
-            formData.append('status', 'GRADING')
-    
+            const payload = {
+                answer: currentCode,
+                quizId: parseInt(quizId),
+                examId: parseInt(exam.id)
+            }
+
+            console.log('Sending payload:', payload);
+
             const response = await fetch('/api/submissions', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
             })
-    
-            const data = await response.json()
-    
+
             if (!response.ok) {
-                throw new Error(data.error || 'Failed to submit')
+                const errorText = await response.text()
+                throw new Error(errorText || 'Server error')
             }
-    
-            // Show success message
-            setSuccess('File submitted successfully')
+
+            const data = await response.json()
+            console.log('Submission response:', data);
+
+            if (data.error) throw new Error(data.error)
+
+            setQuizzesData(prev => {
+                const newState = {
+                    ...prev,
+                    [quizId]: {
+                        ...prev[quizId],
+                        submissionStatus: 'GRADING',
+                        submission: {
+                            ...prev[quizId].submission,
+                            status: 'GRADING',
+                            answer: currentCode,
+                            isCorrect: null,
+                            feedback: null,
+                            aiNote: null
+                        }
+                    }
+                };
+                console.log('Updated quizzesData:', newState);
+                return newState;
+            });
+
+            setSuccess('Code submitted successfully')
             
-            // Refresh the page to show updated data
-            router.refresh()
-            setSelectedFile(null)
+            // Start polling untuk update status
+            startPolling(quizId);
+            
+            // Refresh page setelah delay
+            setTimeout(() => {
+                router.refresh()
+            }, 1000)
         } catch (error) {
-            console.error('Submission error:', error)
-            setError(error.message || 'Failed to submit file. Please try again.')
+            console.error('Submission error:', error);
+            setError(error.message || 'Failed to submit code. Please try again.')
         } finally {
             setSubmitting(false)
         }
     }
 
-    const ReadPreviewSubmitted = ({ url }) => {
-        const [fileContent, setFileContent] = useState('');
-    
-        useEffect(() => {
-            if (!url) return;
-            
-            // Buat fungsi async untuk membaca file
-            const readFile = async () => {
-                try {
-                    // Gunakan fetch biasa untuk membaca file dari public folder
-                    const response = await fetch(url);
-                    const text = await response.text();
-                    setFileContent(text);
-                } catch (error) {
-                    console.error('Error reading file:', error);
-                    setFileContent('Error: Could not load file content');
+    const startPolling = async (quizId) => {
+        let attempts = 0;
+        const maxAttempts = 60; // 5 menit dengan interval 5 detik
+        const pollInterval = setInterval(async () => {
+            try {
+                if (attempts >= maxAttempts) {
+                    clearInterval(pollInterval);
+                    return;
                 }
-            };
-    
-            readFile();
-        }, [url]);
-    
-        if (!url) return null;
-    
-        return (
-            <div className="mt-4">
-                <pre className="border p-2 mt-2 bg-body-tertiary rounded-2 overflow-auto" 
-                     style={{ maxHeight: '300px' }}>
-                    <code>
-                        <strong className="text-black">Code Preview: </strong>
-                        <br /><br />{fileContent || 'Loading...'}
-                    </code>
-                </pre>
-            </div>
-        );
+
+                const response = await fetch(`/api/submissions/status?quizId=${quizId}`);
+                const data = await response.json();
+                
+                console.log('Polling response:', data);
+
+                if (data.status && data.status !== 'GRADING') {
+                    setQuizzesData(prev => ({
+                        ...prev,
+                        [quizId]: {
+                            ...prev[quizId],
+                            submissionStatus: data.status,
+                            submission: {
+                                ...prev[quizId].submission,
+                                status: data.status,
+                                isCorrect: data.isCorrect,
+                                feedback: data.feedback,
+                                aiNote: data.aiNote
+                            }
+                        }
+                    }));
+                    clearInterval(pollInterval);
+                }
+
+                attempts++;
+            } catch (error) {
+                console.error('Polling error:', error);
+                clearInterval(pollInterval);
+            }
+        }, 5000);
+
+        return () => clearInterval(pollInterval);
     };
-    
 
     return (
         <div className="user-task">
-
-            {/* Quiz Navigation */}
             <div className="tab">
-                {Object.entries(quizzesData).map(([quizId, quiz]) => (
-                    <button
-                    key={quizId}
-                    className={`tablinks ${
-                        activeTab === quizId 
-                            ? 'active'
-                            : quiz.status === 'GRADED'
-                                ? quiz.educator_is_correct
-                                    ? 'bg-success text-light'
-                                    : 'bg-danger text-light'
-                                : 'bg-transparent'
-                    }`}
-                    onClick={() => setActiveTab(quizId)}
-                >
-                    {quiz.key}
-                </button>
-                ))}
+                {Object.entries(quizzesData).map(([quizId, quiz]) => {
+                    console.log(`Rendering tab for quiz ${quizId}:`, {
+                        status: quiz.submissionStatus,
+                        isCorrect: quiz.educator_is_correct
+                    });
+
+                    return (
+                        <button
+                            key={quizId}
+                            className={`tablinks ${
+                                activeTab === quizId 
+                                    ? 'active'
+                                    : quiz.submissionStatus === 'GRADED'
+                                        ? quiz.educator_is_correct
+                                            ? 'bg-success text-light'
+                                            : 'bg-danger text-light'
+                                        : 'bg-transparent text-dark'
+                            }`}
+                            onClick={() => setActiveTab(quizId)}
+                        >
+                            {quiz.key}
+                        </button>
+                    );
+                })}
             </div>
 
-
-            {/* Quiz Content */}
             <div className="task-content">
-                <div>
-                    {Object.entries(quizzesData).map(([quizId, quiz]) => (
+                {Object.entries(quizzesData).map(([quizId, quiz]) => {
+                    console.log(`Rendering content for quiz ${quizId}:`, {
+                        status: quiz.submissionStatus,
+                        isCorrect: quiz.educator_is_correct
+                    });
+
+                    return (
                         <div key={quizId} className={`instruction ${activeTab === quizId ? 'show' : ''}`}>
                             <p>{quiz.instruction}</p>
-                            <form onSubmit={(e) => handleSubmit(e, quizId)}>
-                                <div className="mb-2 text-body-secondary">
-                                    <label htmlFor="file-input"><i className="bi bi-filetype-py me-1"></i>Upload your python file here:</label>
-                                </div>
-                                <input
-                                    type="file"
-                                    accept=".py"
-                                    onChange={handleFileChange}
-                                    id="file-input"
-                                    className="form-control"
-                                    disabled={quiz.status === 'GRADING' || quiz.educator_is_correct == true}
-                                />
+                            
+                            {(quiz.submissionStatus === "GRADING" || quiz.submissionStatus === "GRADED") ? (
+                                <p>Your answer review:</p>
+                            ) : (
+                                <p>Input your answer here:</p>
+                            )}
 
-                                {quizzesData[quizId].status === "GRADING" || quizzesData[quizId].status === "GRADED" ? (
-                                    (quizzesData[quizId].status === "GRADED" && quizzesData[quizId].educator_is_correct == true || quizzesData[quizId].status === "GRADING"? (
-                                        <span className="text-secondary ms-2">Submitted <span className="bi bi-check"></span></span>
-                                    ):(
-                                        <button type="submit" className="btn-submit-file-user"
-                                            disabled={submitting || !selectedFile}>
-                                            {submitting ? 'Submitting...' : 'Submit'}
-                                        </button>
-                                    )
-                                ))
-                                :(
-                                    <button type="submit" className="btn-submit-file-user"
-                                            disabled={submitting || !selectedFile}>
+                            <Editor
+                                height="400px"
+                                language="python"
+                                value={codes[quizId] || ''}
+                                onChange={(value) => handleCodeChange(value, quizId)}
+                                theme="vs-dark"
+                                className="mb-3"
+                                options={{
+                                    readOnly: quiz.submissionStatus === "GRADING" || 
+                                             (quiz.submissionStatus === "GRADED" && quiz.educator_is_correct),
+                                    domReadOnly: quiz.submissionStatus === "GRADING" || 
+                                                (quiz.submissionStatus === "GRADED" && quiz.educator_is_correct),
+                                    cursorStyle: (quiz.submissionStatus === "GRADING" || 
+                                               (quiz.submissionStatus === "GRADED" && quiz.educator_is_correct)) 
+                                               ? "line-thin" : "line",
+                                    renderValidationDecorations: "off",
+                                    minimap: { enabled: false },
+                                    lineNumbers: "on",
+                                    wordWrap: "on",
+                                    automaticLayout: true,
+                                }}
+                            />
+
+                            {(quiz.submissionStatus === "GRADING" || quiz.submissionStatus === "GRADED") ? (
+                                (quiz.submissionStatus === "GRADED" && quiz.educator_is_correct) || 
+                                quiz.submissionStatus === "GRADING" ? (
+                                    <span className="text-secondary">Submitted <span className="bi bi-check"></span></span>
+                                ) : (
+                                    <button 
+                                        onClick={(e) => handleSubmit(e, quizId)}
+                                        className="btn-submit-file-user m-0 mt-2"
+                                        disabled={submitting || !codes[quizId]?.trim()}>
                                         {submitting ? 'Submitting...' : 'Submit'}
                                     </button>
-                                )}
+                                )
+                            ) : (
+                                <button 
+                                    onClick={(e) => handleSubmit(e, quizId)}
+                                    className="btn-submit-file-user m-0 mt-2"
+                                    disabled={submitting || !codes[quizId]?.trim()}>
+                                    {submitting ? 'Submitting...' : 'Submit'}
+                                </button>
+                            )}
 
-                                {error && (
-                                    <div className="text-danger mt-2">{error}</div>
-                                )}
+                            {error && <div className="text-danger mt-2">{error}</div>}
+                            {success && <div className="text-success mt-2">{success}</div>}
 
-                                {fileContent ? (
-                                    <pre className="border p-2 mt-3 bg-body-tertiary rounded-2">
-                                        <strong className="text-dark">Code Preview:</strong> 
-                                        <br /><br />{fileContent}</pre>
-                                ) : (
-                                    ''
-                                )}
-
-                                {quizzesData[quizId].submission_file_url && (
-                                    <>
-                                        <ReadPreviewSubmitted url={quizzesData[quizId].submission_file_url} />
-                                    </>
-
-                                )}
-
-
-                            </form>
-                            {quiz.submission && quiz.status === 'GRADED' ?
+                            {quiz.submissionStatus === 'GRADED' && (
                                 <div className={`user-exam-feedback ${quiz.educator_is_correct ? 'correct' : 'false'}`}>
                                     <div>
                                         <p style={{ fontSize: '1rem' }} className="text-body-secondary">Feedbacks:</p>
                                         <h6 className="p-0 m-0">AI Feedbacks:</h6>
                                         <p>{quiz.ai_note ?? 'No Feedback Added'}</p>
-                                        <h6 className="p-0 m-0">Educator Feedbaks:</h6>
+                                        <h6 className="p-0 m-0">Educator Feedbacks:</h6>
                                         <p>{quiz.educator_note ?? 'No Feedback Added'}</p>
                                         <p className="m-0 p-0 text-body-secondary">Conclusion:</p>
                                         {quiz.educator_is_correct ? (
-                                            <h6 className="text-success m-0 p-0">Correct <span><i className="bi bi-check2"></i></span></h6>
+                                            <h6 className="text-success m-0 p-0">Correct <i className="bi bi-check2"></i></h6>
                                         ) : (
-                                            <h6 className="text-danger">False <span><i className="bi bi-x-lg"></i></span></h6>
+                                            <h6 className="text-danger m-0 p-0">False <i className="bi bi-x-lg"></i></h6>
                                         )}
                                     </div>
                                 </div>
-                                : ''}
+                            )}
                         </div>
-                    ))}
-                </div>
+                    );
+                })}
             </div>
-
         </div>
     )
 }

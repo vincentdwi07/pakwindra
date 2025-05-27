@@ -66,7 +66,7 @@ export default function RegisterForm() {
             <div className="register-grid">
                 <div className="d-flex flex-column mb-3">
                     <label htmlFor="email" className="pb-1">Name</label>
-                    <input type="text" className="name-input-user" id="name" placeholder="Input your full name"
+                    <input type="text" className="name-input-user bg-transparent text-black" id="name" placeholder="Input your full name"
                            {...register('name')}
                            name="name"/>
                     {errors.name && (
@@ -79,7 +79,7 @@ export default function RegisterForm() {
                 <div className="d-flex flex-column mb-3">
                     <label htmlFor="role" className="pb-1">Role</label>
                     <select
-                        className="role-input-user"
+                        className="role-input-user bg-transparent text-black"
                         id="role"
                         {...register('role')}
                     >
@@ -95,7 +95,7 @@ export default function RegisterForm() {
 
                 <div className="d-flex flex-column mb-3">
                     <label htmlFor="email" className="pb-1">Email</label>
-                    <input type="text" className="email-input-user" id="email" placeholder="Input your e-mail"
+                    <input type="text" className="email-input-user text-black" id="email" placeholder="Input your e-mail"
                            {...register('email')}
                            name="email"/>
                     {errors.email && (
@@ -108,7 +108,7 @@ export default function RegisterForm() {
 
                 <div className="d-flex flex-column mb-3">
                     <label htmlFor="" className="pb-1 ">Password</label>
-                    <input type="password" className="password-input-user" placeholder="Input your password"
+                    <input type="password" className="password-input-user text-black" placeholder="Input your password"
                            {...register('password')}
                            id="password" name="password"/>
                     {errors.password && (
