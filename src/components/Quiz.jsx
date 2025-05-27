@@ -91,6 +91,7 @@ export default function Quiz({ exam, userId }) {
         }))
     }
 
+    // HANDLE SUBMIT
     const handleSubmit = async (event, quizId) => {
         event.preventDefault()
         console.log('Submitting quiz:', {
@@ -99,6 +100,7 @@ export default function Quiz({ exam, userId }) {
         });
 
         const currentCode = codes[quizId]
+        const aiNote = "aiNote"
         if (!currentCode?.trim()) {
             setError('Please enter your code before submitting')
             return
@@ -112,23 +114,25 @@ export default function Quiz({ exam, userId }) {
             const payload = {
                 answer: currentCode,
                 quizId: parseInt(quizId),
-                examId: parseInt(exam.id)
+                examId: parseInt(exam.id),
+                isCorrect: true,
+                aiNote: aiNote,
             }
 
             console.log('Sending payload:', payload);
 
             const response = await fetch('/api/submissions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(payload)
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
             })
 
             if (!response.ok) {
-                const errorText = await response.text()
-                throw new Error(errorText || 'Server error')
+            const errorText = await response.text()
+            throw new Error(errorText || 'Server error')
             }
 
             const data = await response.json()
@@ -137,34 +141,82 @@ export default function Quiz({ exam, userId }) {
             if (data.error) throw new Error(data.error)
 
             setQuizzesData(prev => {
-                const newState = {
-                    ...prev,
-                    [quizId]: {
-                        ...prev[quizId],
-                        submissionStatus: 'GRADING',
-                        submission: {
-                            ...prev[quizId].submission,
-                            status: 'GRADING',
-                            answer: currentCode,
-                            isCorrect: null,
-                            feedback: null,
-                            aiNote: null
-                        }
-                    }
-                };
-                console.log('Updated quizzesData:', newState);
-                return newState;
+            const newState = {
+                ...prev,
+                [quizId]: {
+                ...prev[quizId],
+                submissionStatus: 'GRADED',
+                educator_is_correct: true,  
+                ai_note: "AI NOTE",
+                submitted_code: currentCode,
+                submission: {
+                    ...prev[quizId].submission,
+                    status: 'GRADED',
+                    answer: currentCode,
+                    isCorrect: true,
+                    feedback: null,
+                    aiNote: "AI NOTE"
+                }
+                }
+            };
+
+            console.log('Updated quizzesData:', newState);
+            return newState;
             });
 
             setSuccess('Code submitted successfully')
-            
-            // Start polling untuk update status
-            startPolling(quizId);
-            
-            // Refresh page setelah delay
-            setTimeout(() => {
-                router.refresh()
-            }, 1000)
+
+            //PANGGIL API AI UNTUK FEEDBACK
+        //     try {
+        //     const aiResponse = await fetch('/api/submissions/ai-feedback', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'Accept': 'application/json'
+        //         },
+        //         body: JSON.stringify({
+        //             instruction: quizzesData[quizId].instruction,
+        //             answer: currentCode,
+        //             submissionId: parseInt(quizId) // pastikan ambil id yang benar
+        //         })
+        //     })
+
+        //     if (!aiResponse.ok) {
+        //         const aiErrorText = await aiResponse.text()
+        //         console.warn('AI Feedback API error:', aiErrorText)
+        //     } else {
+        //         const aiData = await aiResponse.json()
+        //         console.log('AI Feedback response:', aiData)
+        //         // Update aiNote di quizzesData
+        //         setQuizzesData(prev => {
+        //         const updated = {
+        //             ...prev,
+        //             [quizId]: {
+        //                 ...prev[quizId],
+        //                 submission: {
+        //                     ...prev[quizId].submission,
+        //                     aiNote: aiData.aiNote,
+        //                     isCorrect: aiData.isCorrect, // Tambahkan isCorrect dari AI
+        //                     status: 'GRADED'
+        //                 }
+        //             }
+        //         }
+        //         console.log('Updated quizzesData with AI feedback:', updated);
+        //         return updated
+        //         })
+        //     }
+        //     } catch (aiError) {
+        //     console.warn('Failed to fetch AI feedback:', aiError)
+        //     }
+        //     // --- End tambahan ---
+
+        //     // Start polling untuk update status
+        //     startPolling(quizId);
+
+        //     // Refresh page setelah delay
+        //     setTimeout(() => {
+        //     router.refresh()
+        //     }, 1000)
         } catch (error) {
             console.error('Submission error:', error);
             setError(error.message || 'Failed to submit code. Please try again.')
@@ -172,6 +224,7 @@ export default function Quiz({ exam, userId }) {
             setSubmitting(false)
         }
     }
+
 
     const startPolling = async (quizId) => {
         let attempts = 0;
@@ -286,8 +339,7 @@ export default function Quiz({ exam, userId }) {
                             />
 
                             {(quiz.submissionStatus === "GRADING" || quiz.submissionStatus === "GRADED") ? (
-                                (quiz.submissionStatus === "GRADED" && quiz.educator_is_correct) || 
-                                quiz.submissionStatus === "GRADING" ? (
+                                (quiz.submissionStatus === "GRADED" && quiz.educator_is_correct) || quiz.submissionStatus === "GRADING" ? (
                                     <span className="text-secondary">Submitted <span className="bi bi-check"></span></span>
                                 ) : (
                                     <button 

@@ -34,7 +34,7 @@ export async function POST(request) {
         if (!answer || !quizId || !examId) {
             return NextResponse.json({ 
                 error: 'Missing required fields',
-                received: { answer, quizId, examId }
+                received: { answer, quizId, examId, aiNote, isCorrect }
             }, { status: 400 })
         }
 
@@ -55,10 +55,10 @@ export async function POST(request) {
                     where: { id: existingSubmission.id },
                     data: {
                         answer: answer,
-                        status: 'GRADING',
-                        isCorrect: null,
-                        aiVerdict: null,
-                        aiNote: null,
+                        status: 'GRADED',
+                        isCorrect: isCorrect,
+                        // aiVerdict: null,
+                        aiNote: aiNote,
                         feedback: null,
                         score: null,
                         updatedAt: new Date()
@@ -70,10 +70,10 @@ export async function POST(request) {
                         answer: answer,
                         studentId: user.id,
                         quizId: parseInt(quizId),
-                        status: 'GRADING',
-                        isCorrect: null,
-                        aiVerdict: null,
-                        aiNote: null,
+                        status: 'GRADED',
+                        isCorrect: isCorrect,
+                        // aiVerdict: null,
+                        aiNote: aiNote,
                         feedback: null,
                         score: null
                     }
@@ -92,7 +92,7 @@ export async function POST(request) {
             }, { status: 200 })
 
         } catch (dbError) {
-            console.error('Database error:', dbError);
+            // console.error('Database error:', dbError);
             return NextResponse.json({ 
                 error: 'Database operation failed',
                 details: dbError.message
