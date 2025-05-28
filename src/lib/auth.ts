@@ -5,9 +5,9 @@ import db from "@/lib/db"
 import bcrypt from "bcryptjs"
 
 export const authOptions: NextAuthOptions = {
-    // Remove the PrismaAdapter for now since we're using JWT
     session: {
         strategy: "jwt",
+        maxAge: 30 * 24 * 60 * 60, // 30 days
     },
     pages: {
         signIn: "/auth/login",
@@ -27,6 +27,13 @@ export const authOptions: NextAuthOptions = {
                 const user = await db.user.findUnique({
                     where: {
                         email: credentials.email
+                    },
+                    select: {
+                        id: true,
+                        email: true,
+                        name: true,
+                        password: true,
+                        role: true,
                     }
                 })
 
@@ -43,35 +50,86 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Invalid credentials")
                 }
 
+                // Log user data for debugging
+                console.log('Authorized user:', {
+                    id: user.id,
+                    email: user.email,
+                    role: user.role
+                })
+
                 return {
                     id: user.id.toString(),
                     email: user.email,
                     name: user.name,
-                    role: user.role,
+                    role: user.role, // Make sure role is included here
                 }
             }
         })
     ],
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger, session }) {
             if (user) {
-                return {
-                    ...token,
-                    id: user.id,
-                    role: user.role,
-                }
+                // Initial sign in
+                token.id = user.id
+                token.role = user.role
+                token.email = user.email
+                token.name = user.name
+
+                // Log token creation
+                console.log('JWT callback - new token:', {
+                    id: token.id,
+                    role: token.role,
+                    email: token.email
+                })
             }
+
+            // For subsequent requests, token already has the data
             return token
         },
         async session({ session, token }) {
-            return {
-                ...session,
-                user: {
-                    ...session.user,
-                    id: token.id,
-                    role: token.role,
-                }
+            // Add role and id to session
+            if (token) {
+                session.user.id = token.id
+                session.user.role = token.role
+                session.user.email = token.email
+                session.user.name = token.name
+
+                // Log session creation
+                console.log('Session callback:', {
+                    userId: session.user.id,
+                    userRole: session.user.role,
+                    userEmail: session.user.email
+                })
             }
+
+            return session
         }
+    },
+    debug: process.env.NODE_ENV === 'development', // Enable debug messages in development
+}
+
+// Add TypeScript types for session
+declare module "next-auth" {
+    interface Session {
+        user: {
+            id: string
+            name?: string | null
+            email?: string | null
+            role: "EDUCATOR" | "STUDENT"
+        }
+    }
+
+    interface User {
+        id: string
+        name?: string | null
+        email?: string | null
+        role: "EDUCATOR" | "STUDENT"
+    }
+}
+
+declare module "next-auth/jwt" {
+    interface JWT {
+        id: string
+        role: "EDUCATOR" | "STUDENT"
     }
 }

@@ -578,3 +578,12 @@ input:-webkit-autofill:active {
   }
 }
 
+
+.search-input{
+  background-color: transparent;
+  border: 1px solid gray;
+  padding: 5px;
+  outline: none;
+  border-radius: 5px;
+  color: black;
+}

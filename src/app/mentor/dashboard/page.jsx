@@ -1,5 +1,6 @@
-import "../styles/user.css";
-import UserNavbar from "@/components/UserNavbar";
+import "@/styles/user.css";
+import MentorNavbar from "@/components/Mentor/MentorNavbar"
+import MentorExamContent from "@/components/Mentor/MentorExamContent"
 import ExamContent from "@/components/ExamContent";
 import { getExams } from '@/lib/actions/exams'
 import { Role } from '@prisma/client'
@@ -9,9 +10,6 @@ import {redirect} from "next/navigation";
 
 
 export default async function Home() {
-
-  //const { data: session } = useSession()
-  // Get the user session
   const session = await getServerSession(authOptions)
   if (!session?.user) {
     redirect('/auth/login')
@@ -35,37 +33,22 @@ export default async function Home() {
         </div>
     )
   }*/
-
   return (  
     <>
       
       <div className="user-dashboard position-relative">
-        <UserNavbar/>
+        <MentorNavbar/>
         <div className="user-dashboard-content">
-            <h3>Welcome, {session.user.name}!</h3>
-            {/*{Object.keys(tabsData).map((tabKey) =>(
-              <ExamContent
-                key={tabsData[tabKey].key}
-                subject={tabsData[tabKey].subject}
-                due_date={tabsData[tabKey].due_date}
-                title={tabsData[tabKey].title}
-                description={tabsData[tabKey].description}
-                status={tabsData[tabKey].status}
-                min_score={tabsData[tabKey].min_score}
-                score={tabsData[tabKey].score}
-                user_id={tabsData[tabKey].user_id}
-              />
-            ))}*/}
-
+            <h3>Welcome Educator, {session.user.name}!</h3>
           {exams.map(exam => (
-              <ExamContent
+              <MentorExamContent
                   key={exam.id}
                   id={exam.id}
-                  subject={exam.title.split(':')[0] || 'General'} // Assuming title format "Subject: Title"
+                  subject={exam.title.split(':')[0] || 'General'} 
                   title={exam.title}
                   description={exam.description}
                   status={exam.status}
-                  score={exam.quizzes[0]?.submissions[0]?.score || null} // Simplified, you might want to calculate average
+                  score={exam.quizzes[0]?.submissions[0]?.score || null} 
                   userId={exam.creatorId}
                   // minScore={exam.minScore}
                   startDate={exam.startDate}

@@ -6,8 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginInput } from '@/lib/validation/auth'
 import { useRouter } from 'next/navigation'
-import {mockProviders} from "next-auth/client/__tests__/helpers/mocks";
-import callbackUrl = mockProviders.github.callbackUrl;
+// Remove mockProviders import as it's for testing
 
 export default function LoginForm() {
     const [error, setError] = useState<string | null>(null)
@@ -31,22 +30,38 @@ export default function LoginForm() {
             setLoading(true)
             setError(null)
 
+            console.log('Login attempt started...')
+
             const result = await signIn('credentials', {
                 redirect: false,
                 email: data.email,
                 password: data.password,
             })
 
+            console.log('Sign in result:', result)
 
             if (result?.error) {
                 setError('Invalid email or password')
                 return
             }
 
-            router.refresh()
-            router.push('/') // Or your default redirect path
+            // Get fresh session to check role
+            const response = await fetch('/api/auth/session')
+            const session = await response.json()
+
+            console.log('Session after login:', session)
+
+            // Role-based redirect
+            if (session?.user?.role === 'EDUCATOR') {
+                console.log('Redirecting to educator dashboard...')
+                router.push('/mentor/dashboard')
+            } else {
+                console.log('Redirecting to home...')
+                router.push('/')
+            }
 
         } catch (err) {
+            console.error('Login error:', err)
             setError('An unexpected error occurred')
         } finally {
             setLoading(false)
@@ -54,7 +69,11 @@ export default function LoginForm() {
     }
 
     return (
-        <form className="user-login-form" style={{width: "80%"}} onSubmit={handleSubmit(onSubmit)}>
+        <form 
+            className="user-login-form" 
+            style={{width: "80%"}} 
+            onSubmit={handleSubmit(onSubmit)}
+        >
             {error && (
                 <div className="d-flex flex-column mb-3 text-danger">
                     {error}
@@ -62,33 +81,51 @@ export default function LoginForm() {
             )}
             <div className="d-flex flex-column mb-3 ">
                 <label htmlFor="email" className="pb-1">Email</label>
-                <input {...register('email')}
-                    type="text" className="email-input-user text-black" id="email" name="email" placeholder="Input your e-mail"/>
+                <input 
+                    {...register('email')}
+                    type="text" 
+                    className="email-input-user text-black" 
+                    id="email" 
+                    placeholder="Input your e-mail"
+                />
                 {errors.email && (
-                    <p className="mt-1 text-sm text-danger">{errors.email.message}</p>
+                    <p className="mt-1 text-sm text-danger">
+                        {errors.email.message}
+                    </p>
                 )}
             </div>
             <div className="d-flex w-100 flex-column mb-3">
                 <div className="d-flex w-100 justify-content-between">
-                    <label htmlFor="">Password</label>
+                    <label htmlFor="password">Password</label>
                 </div>
-                <input {...register('password')}
-                    type="password" className="password-input-user text-black" placeholder="Input your password" id="password" name="password"/>
+                <input 
+                    {...register('password')}
+                    type="password" 
+                    className="password-input-user text-black" 
+                    placeholder="Input your password" 
+                    id="password"
+                />
                 {errors.password && (
-                    <p className="mt-1 text-sm text-danger">{errors.password.message}</p>
+                    <p className="mt-1 text-sm text-danger">
+                        {errors.password.message}
+                    </p>
                 )}
             </div>
 
-            <div className="d-flex w-100 justify-content-between">
+            <div className="d-flex mb-5 gap-1">
+                <input 
+                    type="checkbox" 
+                    id="remember-me"
+                    className='remember-me-check'
+                />
+                <label htmlFor="remember-me">Remember Me</label>
             </div>
 
-            <div className="d-flex mb-5 gap-1">
-                <input type="checkbox" className='remember-me-check'/>
-                <label htmlFor="">Remember Me</label>
-            </div>
-            <button type="submit"
-                    disabled={loading}
-                    className="w-100 outline-0 border-0 fw-bold p-2 rounded-2 bg-dark text-light shadow">
+            <button 
+                type="submit"
+                disabled={loading}
+                className="w-100 outline-0 border-0 fw-bold p-2 rounded-2 bg-dark text-light shadow"
+            >
                 {loading ? 'LOGGING IN...' : 'LOGIN'}
             </button>
         </form>

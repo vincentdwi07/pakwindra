@@ -44,6 +44,7 @@ model User {
   examsCreated    Exam[]           @relation("ExamCreator")
   examsEnrolled   Exam[]           @relation("ExamEnrollment")
   quizSubmissions QuizSubmission[]
+  examSubmissions ExamSubmission[] 
   Session         Session[]
 }
 
@@ -64,7 +65,6 @@ model Exam {
   id          Int        @id @default(autoincrement())
   title       String
   description String?
-  status      ExamStatus @default(OPEN)
   startDate   DateTime
   endDate     DateTime
   minScore    Float      @default(80)
@@ -77,6 +77,7 @@ model Exam {
   creatorId Int
   students  User[] @relation("ExamEnrollment")
   quizzes   Quiz[]
+  examSubmissions ExamSubmission[] 
 
   @@index([creatorId])
 }
@@ -119,4 +120,23 @@ model QuizSubmission {
   @@unique([studentId, quizId])
   @@index([studentId])
   @@index([quizId])
+}
+
+
+model ExamSubmission {
+  id        Int      @id @default(autoincrement())
+
+  student   User     @relation(fields: [studentId], references: [id])
+  studentId Int
+  status ExamStatus @default(OPEN)
+  exam      Exam     @relation(fields: [examId], references: [id])
+  examId    Int
+
+  score     Float?
+  feedback  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, examId])
 }

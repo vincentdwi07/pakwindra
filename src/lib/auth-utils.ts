@@ -10,7 +10,7 @@ export async function requireAuth(allowedRoles?: Array<'EDUCATOR' | 'STUDENT'>) 
     }
 
     if (allowedRoles && !allowedRoles.includes(session.user.role)) {
-        redirect(session.user.role === 'EDUCATOR' ? '/dashboard/educator' : '/dashboard/student')
+        redirect(session.user.role === 'EDUCATOR' ? '/mentor/dashboard' : '/')
     }
 
     return session

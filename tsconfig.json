@@ -124,7 +124,7 @@
     "app/types/**/*.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "src/app/api/quiz/route.js"  ],
+, "src/app/api/quiz/route.js", "src/components/Mentor/MentorStudentList.jsx", "src/app/mentor/dashboard/exam/[examId]/page.jsx"  ],
   "exclude": [
     "node_modules"
   ]

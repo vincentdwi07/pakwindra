@@ -38,7 +38,7 @@ export async function getExams() {
                 },
                 quizzes: {
                     select: {
-                        status: true,
+                        // status: true,
                         submissions: {
                             where: {
                                 id: parseInt(session.user.id)
@@ -55,7 +55,7 @@ export async function getExams() {
         return {
             exams: exams.map(exam => {
                 // Calculate status based on dates and quiz submissions
-                let status = exam.status
+                // let status = exam.status
                 const isExpired = new Date(exam.endDate) < currentDate
                 const isNotStarted = new Date(exam.startDate) > currentDate
 
@@ -73,7 +73,7 @@ export async function getExams() {
                     key: exam.id,
                     title: exam.title,
                     description: exam.description || '',
-                    status: exam.status,
+                    // status: exam.status,
                     start_date: exam.startDate.toLocaleString('en-US', {
                         day: 'numeric',
                         month: 'long',

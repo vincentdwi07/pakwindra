@@ -30,8 +30,8 @@ export async function POST(request) {
 
         console.log('Received data:', body);
 
-        const { answer, quizId, examId } = body
-        if (!answer || !quizId || !examId) {
+        const { answer, quizId, examId, aiNote, isCorrect } = body
+        if (!answer || !quizId || !examId || !aiNote || !isCorrect) {
             return NextResponse.json({ 
                 error: 'Missing required fields',
                 received: { answer, quizId, examId, aiNote, isCorrect }

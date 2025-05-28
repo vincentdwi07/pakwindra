@@ -11,7 +11,7 @@ export default function UserNavbar() {
     // Navigation items array
     const navItems = [
         {
-            href: '/',
+            href: '/mentor/dashboard',
             icon: 'bi-house-door-fill',
             label: 'Home'
         },
@@ -37,7 +37,7 @@ export default function UserNavbar() {
     return(
         <>
             <div className="d-flex flex-column user-navbar d-none d-sm-flex shadow">
-                <Link href="/" className=" p-3 link-body-emphasis d-flex justify-content-center align-items-center text-decoration-none border-bottom" title="Icon-only" data-bs-toggle="tooltip" data-bs-placement="right">
+                <Link href="/mentor/dashboard" className=" p-3 link-body-emphasis d-flex justify-content-center align-items-center text-decoration-none border-bottom" title="Icon-only" data-bs-toggle="tooltip" data-bs-placement="right">
                     <img src="https://res-console.cloudinary.com/dxe6jlzv7/thumbnails/v1/image/upload/v1748450067/dXNlci1sb2dpbi1sb2dvX3lpZWN2cQ==/drilldown" style={{ height: '30px' }} alt=""/>
                     <span className="visually-hidden">Icon-only</span>
                 </Link>
@@ -68,15 +68,6 @@ export default function UserNavbar() {
                         </li>
                     ))}
                 </ul>
-                {/* <div className="dropdown border-top">
-                    <Link href="#" className="d-flex align-items-center justify-content-center p-3 link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://github.com/mdo.png" alt="mdo" width="24" height="24" className="rounded-circle" />
-                    </Link>
-                    <ul className="dropdown-menu w-100 text-small shadow">
-                        <li><a className="dropdown-item" href="#">Profile</a></li>
-                        <li><hr className="dropdown-divider" /></li>
-                    </ul>
-                </div> */}
                 <LogoutButton />
             </div>
 
@@ -134,17 +125,7 @@ export default function UserNavbar() {
                             ))}
                         </ul>
                     </div>
-                    {/* <div className="dropdown border-top">
-                        <Link href="#" className="d-flex align-items-center justify-content-center p-3 link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://github.com/mdo.png" alt="mdo" width="24" height="24" className="rounded-circle" />
-                        </Link>
-                        <ul className="dropdown-menu w-100 text-small shadow">
-                            <li><a className="dropdown-item" href="#">Profile</a></li>
-                            <li><hr className="dropdown-divider" /></li>
-                        </ul>
-                    </div> */}
                     <LogoutButton />
-
                 </div>
 
                 {showOffcanvas && (

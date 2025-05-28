@@ -1,46 +1,51 @@
 'use server'
 
-import db from '@/lib/db'  // Update this path according to your db file location
+import db from '@/lib/db'
 import { LoginInput } from '@/lib/validation/auth'
 import bcrypt from 'bcryptjs'
+import { signIn } from 'next-auth/react'
 import { headers } from 'next/headers'
 import {createSession, deleteAllUserSessions, deleteSession} from '@/lib/session'
 
 export async function login(data: LoginInput) {
     try {
+        // Validate user exists
         const user = await db.user.findUnique({
             where: {
                 email: data.email,
             },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                password: true,
+                role: true
+            }
         })
 
         if (!user) {
             return { error: 'Invalid credentials' }
         }
 
+        // Validate password
         const isPasswordValid = await bcrypt.compare(data.password, user.password)
 
         if (!isPasswordValid) {
             return { error: 'Invalid credentials' }
         }
 
-        // Delete any existing sessions for this user
-        await deleteAllUserSessions(user.id)
+        // Use NextAuth signIn
+        const result = await signIn('credentials', {
+            email: data.email,
+            password: data.password,
+            redirect: false,
+        })
 
-        // Get client information
-        const headersList = await headers()
-        const userAgent = headersList.get('user-agent')
-        const ip = headersList.get('x-forwarded-for') ||
-            headersList.get('x-real-ip') ||
-            '127.0.0.1'
+        if (result?.error) {
+            return { error: result.error }
+        }
 
-        // Create new session
-        await createSession(
-            user.id,
-            userAgent ?? undefined,
-            ip ?? undefined
-        )
-
+        // Return success with user data
         return {
             success: true,
             user: {
@@ -48,7 +53,7 @@ export async function login(data: LoginInput) {
                 email: user.email,
                 name: user.name,
                 role: user.role,
-            },
+            }
         }
     } catch (error) {
         console.error('Login error:', error)

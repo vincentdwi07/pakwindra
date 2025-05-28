@@ -39,7 +39,7 @@ export const getExams = cache(async (userId, userRole) => {
         },
         orderBy: [
             {
-                status: 'asc'
+                // status: 'asc'
             },
             {
                 startDate: 'asc'
@@ -120,6 +120,7 @@ export const getExamById = cache(async (examId, userId, userRole) => {
     const exam = await db.exam.findFirst({
         where: {
             id: examId,
+            creatorId: userRole === 'EDUCATOR' ? userId : undefined
             /*AND: [
                 {
                     OR: [
@@ -155,6 +156,17 @@ export const getExamById = cache(async (examId, userId, userRole) => {
                     id: true,
                     name: true,
                     email: true
+                }
+            },
+            examSubmissions: {
+                select: {
+                    id: true,
+                    studentId: true,
+                    status: true,
+                    score: true,
+                    feedback: true,
+                    createdAt: true,
+                    updatedAt: true
                 }
             },
             quizzes: {
@@ -206,7 +218,7 @@ export const getExamById = cache(async (examId, userId, userRole) => {
 
     return processedExam
 }, { 
-    tags: ['examId', 'exam-submission'] // Hapus revalidate: 0
+    tags: ['examId', 'exam-submission']
 })
 
 
