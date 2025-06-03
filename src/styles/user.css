@@ -5,6 +5,23 @@ input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px white inset !important;
 }
 
+
+.bg-gray{
+  background-color: lightgray;
+}
+
+.bg-green{
+  background-color: #b1ffcc;
+}
+
+.bg-red{
+  background-color: #ffb1b1;
+}
+
+.bg-yellow{
+  background-color:bisque;
+}
+
 .user-login{
   height: 100vh;
   width: 100%;
@@ -586,4 +603,46 @@ input:-webkit-autofill:active {
   outline: none;
   border-radius: 5px;
   color: black;
+}
+
+.mentor-pill-badge{
+  padding-block: 5px;
+  padding-inline: 15px;
+  border-radius: 5px;
+}
+
+.mentor-student-detail-quiz{
+  border: 1px solid lightgray;
+  border-radius: 15px;
+}
+
+.mentor-detail-student-quiz .exam-content{
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+}
+
+.mentor-detail-student-quiz .exam-content:hover{
+  box-shadow: none;
+}
+
+.exam-header{
+  border: 1px solid lightgray;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding: 15px;
+  padding-block: 10px;
+}
+
+.mentor-detail-student-quiz textarea{
+  border: 1px solid lightgray;
+  border-radius: 5px; 
+  height: 150;
+  transition: all 0.2s ease; 
+}
+
+.mentor-detail-student-quiz textarea:focus {
+  border: 1px solid #212529;
+  outline: none;
 }

@@ -28,6 +28,7 @@ export default async function MentorExamDetail({ params }) {
                     <h3 className="mb-3">{exam.title}</h3>
                 </div>
                 <MentorStudentList 
+                    exam={exam}
                     examId={exam.id}
                     students={exam.students}
                     examSubmissions={exam.examSubmissions}

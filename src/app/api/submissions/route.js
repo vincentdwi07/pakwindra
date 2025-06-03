@@ -107,3 +107,62 @@ export async function POST(request) {
         }, { status: 500 })
     }
 }
+
+// ...existing code...
+
+export async function GET(request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const examId = searchParams.get('examId');
+        const studentId = searchParams.get('studentId');
+
+        if (!examId || !studentId) {
+            return NextResponse.json({ 
+                error: 'Missing examId or studentId' 
+            }, { status: 400 });
+        }
+
+        // 1. Ambil semua quiz dari exam
+        const exam = await db.exam.findUnique({
+            where: { id: Number(examId) },
+            include: { quizzes: true }
+        });
+
+        if (!exam) {
+            return NextResponse.json({ 
+                error: 'Exam not found' 
+            }, { status: 404 });
+        }
+
+        // 2. Ambil submissions untuk quiz-quiz tersebut
+        const submissions = await db.quizSubmission.findMany({
+            where: {
+                quizId: { in: exam.quizzes.map(q => q.id) },
+                studentId: Number(studentId)
+            }
+        });
+
+        // 3. Gabungkan data quiz dan submission
+        const result = exam.quizzes.map(quiz => {
+            const submission = submissions.find(sub => sub.quizId === quiz.id);
+            return {
+                quizId: quiz.id,
+                instruksi: quiz.instruksi,
+                status: submission?.status || 'OPEN',
+                code: submission?.answer || '',
+                aiFeedback: submission?.aiNote || '',
+                isCorrect: submission?.isCorrect || false,
+                language: quiz.language || 'python'
+            };
+        });
+
+        return NextResponse.json(result);
+
+    } catch (error) {
+        console.error('Server error:', error);
+        return NextResponse.json({ 
+            error: 'Server error',
+            details: error.message 
+        }, { status: 500 });
+    }
+}

@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginInput } from '@/lib/validation/auth'
 import { useRouter } from 'next/navigation'
+import "@/styles/user.css";
 // Remove mockProviders import as it's for testing
 
 export default function LoginForm() {
@@ -112,14 +113,14 @@ export default function LoginForm() {
                 )}
             </div>
 
-            <div className="d-flex mb-5 gap-1">
+            {/* <div className="d-flex mb-5 gap-1">
                 <input 
                     type="checkbox" 
                     id="remember-me"
                     className='remember-me-check'
                 />
                 <label htmlFor="remember-me">Remember Me</label>
-            </div>
+            </div> */}
 
             <button 
                 type="submit"

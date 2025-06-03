@@ -3,13 +3,58 @@
 import { useState } from 'react'
 import Link from "next/link"
 
-export default function MentorStudentList({ examId, students, examSubmissions }) {
+export default function MentorStudentList({ exam, examId, students, examSubmissions }) {
     const [searchTerm, setSearchTerm] = useState('')
 
     const filteredStudents = students?.filter(student => 
         student.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         student.email.toLowerCase().includes(searchTerm.toLowerCase())
     ) || []
+
+    const submissionStatus = (stat) => {
+        switch (stat) {
+            case 'GRADING':
+                return statusGrading();
+            case 'GRADED':
+                return statusGraded();
+            default:
+                return statusOpen();
+        }
+    }
+
+    const statusOpen = () => {
+        return (
+            <div className="mentor-pill-badge bg-body-secondary">
+                OPEN                                      
+            </div>
+        )
+    }
+
+    const statusGrading = () => {
+        return (
+            <div className="mentor-pill-badge bg-yellow">
+                GRADING                                      
+            </div>
+        )
+    }
+
+    const statusGraded = () => {
+        return (
+            <div className="mentor-pill-badge bg-green">
+                GRADED                                      
+            </div>
+        )
+    }
+
+    function formatDateIndo(dateString) {
+        if (!dateString) return '-';
+        return new Date(dateString).toLocaleDateString('id-ID', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+    }
 
     return (
         <>
@@ -35,49 +80,40 @@ export default function MentorStudentList({ examId, students, examSubmissions })
                                 <h4 style={{ verticalAlign: "-0.125em" }}><i className='bi bi-person-fill m-0 p-0'></i></h4>
                                 <h4 className="m-0">{student.name}</h4>
                             </div>
-                            <div className="d-flex flex-wrap flex-md-nowrap justify-content-between align-items-end" style={{ padding: "15px" }}>
-                                <div className="flex-fill">
-                                    <div className="row mb-1">
-                                        <div className="col-2">
-                                            <p className="m-0">Status</p>
+                            <div className="d-flex flex-wrap flex-md-nowrap justify-content-between align-items-center" style={{ padding: "15px" }}>
+                                    <div className="d-flex gap-2">
+                                        <div>
+                                            {submissionStatus(submission?.status)}         
                                         </div>
-                                        <div className="col-10">
-                                            <p className="m-0">: {submission?.status || 'OPEN'}</p>
-                                        </div>
-                                    </div>
-                                    {submission?.status === "GRADED" && (
+                                        {submission?.status === "GRADED" && (
                                         <>
-                                            <div className="row mb-1">
-                                                <div className="col-2">
-                                                    <p className="m-0">Score</p>
-                                                </div>
-                                                <div className="col-10">
-                                                    <p className="m-0">: {submission?.score ? `${submission.score}/100` : '-'}</p>
-                                                </div>
+                                            <div>
+                                            {submission?.score !== undefined && (
+                                                submission.score < exam?.minScore ? (
+                                                <span className="mentor-pill-badge bg-red text-danger">{submission.score}/100</span>
+                                                ) : (
+                                                <span className="mentor-pill-badge bg-green text-success">{submission.score}/100</span>
+                                                )
+                                            )}
                                             </div>
-                                            <div className="row">
-                                                <div className="col-2">
-                                                    <p className="m-0">Submitted at</p>
-                                                </div>
-                                                <div className="col-10">
-                                                    <p className="m-0">: {
-                                                        submission?.updatedAt 
-                                                            ? new Date(submission.updatedAt).toLocaleDateString('id-ID', {
-                                                                weekday: 'long',
-                                                                day: 'numeric',
-                                                                month: 'long',
-                                                                year: 'numeric'
-                                                            })
-                                                            : '-'
-                                                    }</p>
-                                                </div>
+                                            <div>
+                                                {submission?.updatedAt && exam?.endDate && (
+                                                    <>
+                                                        <p>Tanggal diserahkan: {formatDateIndo(submission.updatedAt)}</p>
+                                                        {new Date(submission.updatedAt) <= new Date(exam.endDate) ? (
+                                                            <p className="mentor-pill-badge bg-green text-success">{submission.updatedAt}</p>
+                                                        ) : (
+                                                            <p className="mentor-pill-badge bg-red text-danger">{submission.updatedAt}</p>
+                                                        )}
+                                                    </>
+                                                )}
                                             </div>
                                         </>
-                                    )}
-                                </div>
+                                        )}
+                                    </div>
                                 <div>
                                     <Link
-                                        href={`/mentor/exam/${examId}/student/${student.id}`}
+                                        href={`${examId}/student/${student.id}`}
                                         className='btn btn-outline-dark'
                                     >
                                         Detail <i className="bi bi-arrow-right-short"></i>

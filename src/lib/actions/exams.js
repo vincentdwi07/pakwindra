@@ -266,3 +266,23 @@ const getExamTiming = (exam, currentTime) => {
         endDate
     }
 }
+
+export async function getStudentQuizSubmissionsByExam(examId, studentId) {
+    // 1. Ambil semua quizId dari exam
+    const exam = await db.exam.findUnique({
+        where: { id: Number(examId) },
+        include: { quizzes: { select: { id: true } } }
+    });
+    if (!exam) return [];
+
+    const quizIds = exam.quizzes.map(q => q.id);
+
+    // 2. Ambil semua QuizSubmission untuk studentId dan quizId tsb
+    return db.quizSubmission.findMany({
+        where: {
+            quizId: { in: quizIds },
+            studentId: Number(studentId)
+        },
+        orderBy: { createdAt: 'desc' }
+    });
+}
