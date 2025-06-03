@@ -165,6 +165,22 @@ export default function Quiz({ exam, userId }) {
             });
 
             setSuccess('Code submitted successfully')
+            
+            /*const aiResponse = await fetch('/api/submissions/ai-feedback', {
+                method: 'POST',
+                body: JSON.stringify({
+                    instruction: quizzesData[quizId].instruction,
+                    answer: currentCode,
+                    submissionId: parseInt(quizId)
+                })
+            })
+            if (!aiResponse.ok) {
+                const aiErrorText = await aiResponse.text()
+                console.warn('AI Feedback API error:', aiErrorText)
+            } else {
+                console.log("Successfully generating ai response");
+                console.log(aiResponse);
+            }*/
 
             //PANGGIL API AI UNTUK FEEDBACK
         //     try {
@@ -226,7 +242,7 @@ export default function Quiz({ exam, userId }) {
     }
 
 
-    const startPolling = async (quizId) => {
+    /*const startPolling = async (quizId) => {
         let attempts = 0;
         const maxAttempts = 60; // 5 menit dengan interval 5 detik
         const pollInterval = setInterval(async () => {
@@ -267,16 +283,16 @@ export default function Quiz({ exam, userId }) {
         }, 5000);
 
         return () => clearInterval(pollInterval);
-    };
+    };*/
 
     return (
         <div className="user-task">
             <div className="tab">
                 {Object.entries(quizzesData).map(([quizId, quiz]) => {
-                    console.log(`Rendering tab for quiz ${quizId}:`, {
+                    /*console.log(`Rendering tab for quiz ${quizId}:`, {
                         status: quiz.submissionStatus,
                         isCorrect: quiz.educator_is_correct
-                    });
+                    });*/
 
                     return (
                         <button
@@ -300,10 +316,10 @@ export default function Quiz({ exam, userId }) {
 
             <div className="task-content">
                 {Object.entries(quizzesData).map(([quizId, quiz]) => {
-                    console.log(`Rendering content for quiz ${quizId}:`, {
+                    /*console.log(`Rendering content for quiz ${quizId}:`, {
                         status: quiz.submissionStatus,
                         isCorrect: quiz.educator_is_correct
-                    });
+                    });*/
 
                     return (
                         <div key={quizId} className={`instruction ${activeTab === quizId ? 'show' : ''}`}>

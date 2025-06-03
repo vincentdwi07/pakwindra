@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { revalidatePath, revalidateTag } from 'next/cache'
+import {evaluateCode} from "@/lib/ai/code-evaluator";
 
 export async function POST(request) {
     try {
@@ -48,6 +49,14 @@ export async function POST(request) {
                     updatedAt: 'desc'
                 }
             })
+
+            // evaluating the code
+            const question = `Dengan penggalan program berikut:
+a = [3, 1, 5, 3, 8, 1, 0]
+b = [3, 1, 5, 3, 8, 2, 0]
+Uji apakah kedua array memiliki elemen yang sama. Jika sama, tampilkan sama, jika ada 1 saja yang tidak sama, tampilkan tidak sama.`;
+            const generatedResponse = await evaluateCode(answer, question);
+            console.log(generatedResponse)
 
             let submission;
             if (existingSubmission) {

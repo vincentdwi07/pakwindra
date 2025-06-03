@@ -1,8 +1,9 @@
 // lib/ollama-langchain.js
-import { Ollama } from "@langchain/community/llms/ollama";
+//import { Ollama } from "@langchain/community/llms/ollama";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { StructuredOutputParser } from "@langchain/core/output_parsers";
 import { z } from "zod";
+import {Ollama} from "@langchain/ollama";
 
 // Inisialisasi Ollama dengan LangChain
 const ollama = new Ollama({
@@ -97,6 +98,7 @@ export async function generateAIFeedback(instruction, answer) {
 }
 
 // Alternative: Menggunakan Chain untuk workflow yang lebih kompleks
+/*
 export async function generateAIFeedbackWithChain(instruction, answer) {
     try {
         const { LLMChain } = await import("@langchain/core/chains");
@@ -118,4 +120,4 @@ export async function generateAIFeedbackWithChain(instruction, answer) {
         console.error('Chain execution error:', error);
         throw new Error('Failed to execute AI feedback chain');
     }
-}
+}*/

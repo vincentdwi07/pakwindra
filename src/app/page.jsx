@@ -22,6 +22,7 @@ export default async function Home() {
   const userRole = session.user.role;
 
   const exams = await getExams(studentId, userRole)
+  console.log(exams)
 
   //const { exams, error } = await getExams()
 
@@ -64,7 +65,7 @@ export default async function Home() {
                   subject={exam.title.split(':')[0] || 'General'} // Assuming title format "Subject: Title"
                   title={exam.title}
                   description={exam.description}
-                  status={exam.status}
+                  status={"OPEN"}
                   score={exam.quizzes[0]?.submissions[0]?.score || null} // Simplified, you might want to calculate average
                   userId={exam.creatorId}
                   // minScore={exam.minScore}
