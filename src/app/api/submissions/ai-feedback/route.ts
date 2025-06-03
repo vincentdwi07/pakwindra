@@ -3,10 +3,9 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
-// import { callOllama } from '@/lib/ollama' // Metode lama
-import { generateAIFeedback } from '@/lib/ollama-langchain' // Metode baru dengan LangChain
+import {evaluateCode} from "@/lib/ai/code-evaluator";
 
-export async function POST(request) {
+export async function POST(request: Request) {
     try {
         // Validasi session
         const session = await getServerSession(authOptions)
@@ -38,18 +37,32 @@ export async function POST(request) {
         }
 
         try {
-            // OPSI 1: Menggunakan LangChain (Rekomendasi)
-            const evaluation = await generateAIFeedback(instruction, answer);
+            // TODO: Change the question to be from the database instead
+            const defaultQuestion = `Dengan penggalan program berikut:
+a = [3, 1, 5, 3, 8, 1, 0]
+b = [3, 1, 5, 3, 8, 2, 0]
+Uji apakah kedua array memiliki elemen yang sama. Jika sama, tampilkan sama, jika ada 1 saja yang tidak sama, tampilkan tidak sama.`;
+
+            // const evaluation = await generateAIFeedback(instruction, answer);
+            const generatedResponse = await evaluateCode(answer, defaultQuestion);
+            const {
+                correctnessAnalysis,
+                testCaseResults,
+                errors,
+                feedbackAndImprovements,
+                overallJudgment
+            } = generatedResponse;
             
             // OPSI 2: Tetap menggunakan Ollama langsung
             // const aiFeedbackRaw = await callOllama(prompt)
             // ... parsing manual seperti sebelumnya ...
 
             // Update submission dengan feedback dan status
-            const updatedSubmission = await db.quizSubmission.update({
+
+            /*const updatedSubmission = await db.quizSubmission.update({
                 where: { id: submissionId },
                 data: { 
-                    aiNote: evaluation.feedback,
+                    aiNote: evaluation.overall,
                     isCorrect: evaluation.isCorrect,
                     status: 'GRADED'
                 }
@@ -60,13 +73,13 @@ export async function POST(request) {
                 aiNote: evaluation.feedback,
                 isCorrect: evaluation.isCorrect,
                 status: 'GRADED'
-            })
+            })*/
 
         } catch (aiError) {
             console.error('AI Processing error:', aiError)
             return NextResponse.json({ 
                 error: 'Failed to generate AI feedback',
-                details: aiError.message 
+                details: aiError
             }, { status: 500 })
         }
 
