@@ -88,6 +88,7 @@ model Quiz {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  submission_limit Int?
 
   // Relations
   exam        Exam             @relation(fields: [examId], references: [exam_id])
