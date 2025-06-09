@@ -29,7 +29,7 @@ export default async function MentorExamDetail({ params }) {
                 </div>
                 <MentorStudentList 
                     exam={exam}
-                    examId={exam.id}
+                    examId={exam.exam_id}
                     students={exam.students}
                     examSubmissions={exam.examSubmissions}
                 />

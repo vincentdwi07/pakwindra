@@ -85,7 +85,7 @@ export default function LoginForm() {
                 <input 
                     {...register('email')}
                     type="text" 
-                    className="email-input-user text-black" 
+                    className="email-input-user text-black bg-transparent" 
                     id="email" 
                     placeholder="Input your e-mail"
                 />

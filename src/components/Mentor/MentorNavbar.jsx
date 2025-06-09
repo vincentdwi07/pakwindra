@@ -15,11 +15,11 @@ export default function UserNavbar() {
             icon: 'bi-house-door-fill',
             label: 'Home'
         },
-        // {
-        //     href: '/dashboard',
-        //     icon: 'bi-speedometer2',
-        //     label: 'Dashboard'
-        // },
+        {
+            href: '/mentor/dashboard/createExam',
+            icon: 'bi bi-clipboard-plus-fill',
+            label: 'Create Exam'
+        },
         // {
         //     href: '/task',
         //     icon: 'bi-list-task',

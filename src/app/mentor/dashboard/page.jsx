@@ -42,8 +42,8 @@ export default async function Home() {
             <h3>Welcome Educator, {session.user.name}!</h3>
           {exams.map(exam => (
               <MentorExamContent
-                  key={exam.id}
-                  id={exam.id}
+                  key={exam.exam_id}
+                  id={exam.exam_id}
                   subject={exam.title.split(':')[0] || 'General'} 
                   title={exam.title}
                   description={exam.description}
@@ -62,7 +62,7 @@ export default async function Home() {
               <div className="no-exam text-muted">
                 <i className="bi bi-inbox-fill fs-1 d-block mb-3"></i>
                 <h5>No exams available</h5>
-                <p>You don't have any exams assigned yet.</p>
+                <p>You didn't create any exams yet.</p>
               </div>
           )}
 

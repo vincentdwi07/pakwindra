@@ -41,7 +41,7 @@ export async function getExams() {
                         // status: true,
                         submissions: {
                             where: {
-                                id: parseInt(session.user.id)
+                                studentId: parseInt(session.user.id)
                             }
                         }
                     }
@@ -70,7 +70,7 @@ export async function getExams() {
                 }
 
                 return {
-                    key: exam.id,
+                    key: exam.exam_id,
                     title: exam.title,
                     description: exam.description || '',
                     // status: exam.status,

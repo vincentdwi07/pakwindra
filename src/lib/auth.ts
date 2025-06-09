@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
                         email: credentials.email
                     },
                     select: {
-                        id: true,
+                        user_id: true,
                         email: true,
                         name: true,
                         password: true,
@@ -52,13 +52,13 @@ export const authOptions: NextAuthOptions = {
 
                 // Log user data for debugging
                 console.log('Authorized user:', {
-                    id: user.id,
+                    id: user.user_id,
                     email: user.email,
                     role: user.role
                 })
 
                 return {
-                    id: user.id.toString(),
+                    id: user.user_id.toString(),
                     email: user.email,
                     name: user.name,
                     role: user.role, // Make sure role is included here

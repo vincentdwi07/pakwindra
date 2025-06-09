@@ -60,7 +60,7 @@ export default function ExamContent({
 
     const Graded = () => (
         <Link
-            href={`/exam/${id}/result`}
+            href={`/exam/${exam_id}/result`}
             className='btn btn-outline-dark'
         >
             Detail <i className="bi bi-arrow-right-short"></i>

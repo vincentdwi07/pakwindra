@@ -20,29 +20,29 @@ export async function evaluateCode(code, question) {
 
     // Create prompt template for code evaluation
     const promptTemplate = PromptTemplate.fromTemplate(`
-You are a code evaluation agent for programming assignments in Indonesian language. 
-Your task is to evaluate and determined whether correct or incorrect that
-student's Python code as solution on given question or instruction and test cases.
+        You are a code evaluation agent for programming assignments in Indonesian language. 
+        Your task is to evaluate and determined whether correct or incorrect that
+        student's Python code as solution on given question or instruction and test cases.
 
-QUESTION:
-{question}
+        QUESTION:
+        {question}
 
-SUBMITTED STUDENT'S CODE:
-\`\`\`python
-{code}
-\`\`\`
+        SUBMITTED STUDENT'S CODE:
+        \`\`\`python
+        {code}
+        \`\`\`
 
-TEST CASES:
-{testCases}
+        TEST CASES:
+        {testCases}
 
-Your task is to:
+        Your task is to:
 
-1. Analyze if the submitted code correctly implements the requirements from the question
-2. Run through the test cases and check if the output matches the expected results
-3. Identify any errors or bugs in the code
-4. Provide specific feedback on what's wrong and how to fix it
-5. Suggest improvements for code quality, efficiency, and best practices
-6. Make a final judgment on whether the submission is correct or incorrect
+        1. Analyze if the submitted code correctly implements the requirements from the question
+        2. Run through the test cases and check if the output matches the expected results
+        3. Identify any errors or bugs in the code
+        4. Provide specific feedback on what's wrong and how to fix it
+        5. Suggest improvements for code quality, efficiency, and best practices
+        6. Make a final judgment on whether the submission is correct or incorrect
 `);
     console.log(promptTemplate)
     console.log("Prompt template created...");

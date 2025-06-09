@@ -41,7 +41,7 @@ export async function register(data: RegisterInput) {
 
         // Create session
         await createSession(
-            user.id,
+            user.user_id,
             userAgent ?? undefined,
             ip ?? undefined
         )
@@ -50,7 +50,7 @@ export async function register(data: RegisterInput) {
             
             success: true,
             user: {
-                id: user.id,
+                id: user.user_id,
                 email: user.email,
                 name: user.name,
                 role: user.role,

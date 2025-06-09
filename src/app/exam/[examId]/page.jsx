@@ -25,12 +25,13 @@ export default async function ExamDetail({ params }) {
         redirect('/login')
     }
 
-    const { examId } = params
+    const examId = params.examId
+
     if (isNaN(examId)) {
         redirect('/')
     }
 
-    const exam = await getExamById(parseInt(examId), user.id, user.role)
+    const exam = await getExamById(parseInt(examId), user.user_id, user.role)
     
     if (!exam) {
         redirect('/')
@@ -52,7 +53,7 @@ export default async function ExamDetail({ params }) {
                 </div>
                 <Quiz 
                     exam={exam} 
-                    userId={user.id}
+                    userId={user.user_id}
                     key={timestamp}
                 />
             </div>

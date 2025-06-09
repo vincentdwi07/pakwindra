@@ -208,6 +208,7 @@ input:-webkit-autofill:active {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='gray' class='bi bi-person-fill' viewBox='0 0 16 16'%3E%3Cpath d='M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: 0 center;
+  background-color: transparent !important;  /* Add this line */
 }
 
 .password-input-user{
@@ -228,8 +229,30 @@ input:-webkit-autofill:active {
 .email-input-user:focus,
 .password-input-user:focus{
   border-bottom: 1.5px solid black !important;
+  padding-left: 25px; 
   transition: all 0.2s ease-in-out;
 }
+
+/* Override Chrome's autofill styles */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-text-fill-color: #212529 !important;
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+    background-color: transparent !important;
+    caret-color: #212529;
+}
+
+input.email-input-user:-webkit-autofill {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23808080' viewBox='0 0 16 16'%3E%3Cpath d='M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z'/%3E%3C/svg%3E") !important;
+}
+
+input.password-input-user:-webkit-autofill {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23808080' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2M2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2'/%3E%3C/svg%3E") !important;
+}
+
 
 /* HTML: <div class="loader"></div> */
 .loading-bar {
@@ -645,4 +668,52 @@ input:-webkit-autofill:active {
 .mentor-detail-student-quiz textarea:focus {
   border: 1px solid #212529;
   outline: none;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 10px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: l5 1s infinite linear alternate;
+  margin-inline: 20px;
+  margin-block: 5px;
+}
+@keyframes l5 {
+    0%  {box-shadow: 20px 0 #ffffff, -20px 0 #e6e6e6; background: #ffffff}
+    33% {box-shadow: 20px 0 #e6e6e6, -20px 0 #e6e6e6; background: #e6e6e6}
+    66% {box-shadow: 20px 0 #e6e6e6, -20px 0 #ffffff; background: #e6e6e6}
+    100%{box-shadow: 20px 0 #e6e6e6, -20px 0 #ffffff; background: #ffffff}
+}
+
+.mentor-add-exam-input{
+  background-color: transparent;
+  border: 1px solid lightgray;
+  box-shadow: 0px 0px 0px 0.5px rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 5px;
+  color: black;
+  transition: all 0.2s ease;
+  margin-bottom: 0;
+}
+
+.mentor-add-exam-input:focus{
+  border: 1px solid black;
+  outline: none; 
+  transition: all 0.2s ease;
+}
+
+
+.mentor-add-quiz-component{
+  border: 1px solid lightgray;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.btn-mentor-add-quiz-component{
+  width: 100%;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
 }

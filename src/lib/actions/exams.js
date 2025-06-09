@@ -2,20 +2,13 @@ import { db } from '@/lib/db'
 import { cache } from 'react'
 
 export const getExams = cache(async (userId, userRole) => {
-    const now = new Date() // Using provided current time
+    const now = new Date()
 
     const baseQuery = {
         include: {
             creator: {
                 select: {
-                    id: true,
-                    name: true,
-                    email: true
-                }
-            },
-            students: {
-                select: {
-                    id: true,
+                    user_id: true,
                     name: true,
                     email: true
                 }
@@ -27,24 +20,19 @@ export const getExams = cache(async (userId, userRole) => {
                             studentId: userId
                         } : undefined,
                         select: {
-                            id: true,
+                            quiz_submission_id: true,
                             studentId: true,
                             score: true,
                             isCorrect: true,
-                            createdAt: true
+                            createdAt: true 
                         }
                     }
                 }
             }
         },
-        orderBy: [
-            {
-                // status: 'asc'
-            },
-            {
-                startDate: 'asc'
-            }
-        ]
+        orderBy: {
+            startDate: 'asc'
+        }
     }
 
     if (userRole === 'EDUCATOR') {
@@ -56,18 +44,8 @@ export const getExams = cache(async (userId, userRole) => {
         })
     }
 
-    // For students
-    return db.exam.findMany({
-        ...baseQuery,
-        where: {
-            students: {
-                some: {
-                    id: userId
-                }
-            }
-        }
-    })
-}, { next: {tags : ['exam']}})
+    return db.exam.findMany(baseQuery) 
+})
 
 export const processExamForDisplay = (
     exam,
@@ -119,59 +97,30 @@ export const getExamById = cache(async (examId, userId, userRole) => {
 
     const exam = await db.exam.findFirst({
         where: {
-            id: examId,
+            exam_id: examId,
             creatorId: userRole === 'EDUCATOR' ? userId : undefined
-            /*AND: [
-                {
-                    OR: [
-                        { creatorId: userRole === 'EDUCATOR' ? userId : undefined },
-                        {
-                            students: {
-                                some: {
-                                    id: userRole === 'STUDENT' ? userId : undefined
-                                }
-                            }
-                        }
-                    ]
-                },
-                userRole === 'STUDENT'
-                    ? {
-                        startDate: {
-                            lte: now
-                        }
-                    }
-                    : {}
-            ]*/
         },
         include: {
             creator: {
                 select: {
-                    id: true,
-                    name: true,
-                    email: true
-                }
-            },
-            students: {
-                select: {
-                    id: true,
+                    user_id: true,
                     name: true,
                     email: true
                 }
             },
             examSubmissions: {
                 select: {
-                    id: true,
+                    exam_submission_id: true,
                     studentId: true,
                     status: true,
                     score: true,
-                    feedback: true,
                     createdAt: true,
                     updatedAt: true
                 }
             },
             quizzes: {
                 orderBy: {
-                    id: 'asc'
+                    quiz_id: 'asc'
                 },
                 include: {
                     submissions: {
@@ -179,7 +128,7 @@ export const getExamById = cache(async (examId, userId, userRole) => {
                             studentId: userRole === 'STUDENT' ? userId : undefined
                         },
                         select: {
-                            id: true,
+                            quiz_submission_id: true,
                             studentId: true,
                             score: true,
                             isCorrect: true,
@@ -270,12 +219,12 @@ const getExamTiming = (exam, currentTime) => {
 export async function getStudentQuizSubmissionsByExam(examId, studentId) {
     // 1. Ambil semua quizId dari exam
     const exam = await db.exam.findUnique({
-        where: { id: Number(examId) },
-        include: { quizzes: { select: { id: true } } }
+        where: { exam_id: Number(examId) },
+        include: { quizzes: { select: { quiz_id: true } } }
     });
     if (!exam) return [];
 
-    const quizIds = exam.quizzes.map(q => q.id);
+    const quizIds = exam.quizzes.map(q => q.quiz_id);
 
     // 2. Ambil semua QuizSubmission untuk studentId dan quizId tsb
     return db.quizSubmission.findMany({

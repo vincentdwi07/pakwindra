@@ -72,7 +72,7 @@ export default function MentorStudentList({ exam, examId, students, examSubmissi
                 <h6 className='fw-normal'>Student not found</h6>
             ) : (
                 filteredStudents.map(student => {
-                    const submission = examSubmissions?.find(sub => sub.studentId === student.id)
+                    const submission = examSubmissions?.find(sub => sub.studentId === student.user_id)
                 
                     return (
                         <div key={student.id} className="exam-content p-0 mt-1 mb-2">

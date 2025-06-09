@@ -15,7 +15,7 @@ export async function login(data: LoginInput) {
                 email: data.email,
             },
             select: {
-                id: true,
+                user_id: true,
                 email: true,
                 name: true,
                 password: true,
@@ -49,7 +49,7 @@ export async function login(data: LoginInput) {
         return {
             success: true,
             user: {
-                id: user.id,
+                id: user.user_id,
                 email: user.email,
                 name: user.name,
                 role: user.role,

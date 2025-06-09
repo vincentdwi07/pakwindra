@@ -8,8 +8,8 @@ export function getOllamaModel() {
         console.log("Creating new Ollama model instance...");
         ollamaModelInstance = new ChatOllama({
             //baseUrl: process.env.NEXT_PUBLIC_OLLAMA_BASE_URL || "http://localhost:11434",
-            model: "deepseek-r1:7b",
-            //model: "deepseek-r1:1.5b",
+            // model: "deepseek-r1:7b",
+            model: "deepseek-r1:1.5b",
             temperature: 0.1,
             maxRetries: 2,
         });
