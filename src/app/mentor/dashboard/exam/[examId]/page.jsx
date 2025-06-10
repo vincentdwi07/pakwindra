@@ -8,12 +8,17 @@ import { redirect } from "next/navigation"
 
 export default async function MentorExamDetail({ params }) {
     const session = await getServerSession(authOptions)
-    
+    const examId = Number(params.examId)
+
+    if (isNaN(examId)) {
+        throw new Error('Invalid exam ID')
+    }
+
     if (!session?.user || session.user.role !== 'EDUCATOR') {
         redirect('/auth/login')
     }
 
-    const exam = await getExamById(parseInt(params.examId), parseInt(session.user.id), session.user.role)
+    const exam = await getExamById(examId, parseInt(session.user.id), session.user.role);
     
     if (!exam) {
         return <div>Exam not found</div>

@@ -1,141 +1,142 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+  // This is your Prisma schema file,
+  // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+  // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+  // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-generator client {
-  provider = "prisma-client-js"
-}
+  generator client {
+    provider = "prisma-client-js"
+  }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+  datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+  }
 
-enum Role {
-  EDUCATOR
-  STUDENT
-}
+  enum Role {
+    EDUCATOR
+    STUDENT
+  }
 
-enum ExamStatus {
-  OPEN
-  GRADING
-  GRADED
-}
+  enum ExamStatus {
+    OPEN
+    GRADING
+    GRADED
+  }
 
-enum QuizStatus {
-  OPEN
-  GRADING
-  GRADED
-}
+  enum QuizStatus {
+    OPEN
+    GRADING
+    GRADED
+  }
 
-model User {
-  user_id       Int     @id @default(autoincrement())
-  email    String  @unique
-  name     String?
-  password String
-  role     Role
+  model User {
+    user_id       Int     @id @default(autoincrement())
+    email    String  @unique
+    name     String?
+    password String
+    role     Role
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  // Relations
-  examsCreated    Exam[]           @relation("ExamCreator")
-  quizSubmissions QuizSubmission[]
-  examSubmissions ExamSubmission[] 
-  Session         Session[]
-}
+    // Relations
+    examsCreated    Exam[]           @relation("ExamCreator")
+    quizSubmissions QuizSubmission[]
+    examSubmissions ExamSubmission[] 
+    Session         Session[]
+  }
 
-model Session {
-  id           String   @id @default(cuid())
-  userId       Int
-  user         User     @relation(fields: [userId], references: [user_id], onDelete: Cascade)
-  token        String   @unique
-  expires      DateTime
-  lastActivity DateTime @default(now())
-  userAgent    String?
-  ipAddress    String?
+  model Session {
+    id           String   @id @default(cuid())
+    userId       Int
+    user         User     @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+    token        String   @unique
+    expires      DateTime
+    lastActivity DateTime @default(now())
+    userAgent    String?
+    ipAddress    String?
 
-  @@index([userId])
-}
+    @@index([userId])
+  }
 
-model Exam {
-  exam_id          Int        @id @default(autoincrement())
-  title       String
-  description String?
-  startDate   DateTime
-  endDate     DateTime
-  minScore    Float      @default(80)
+  model Exam {
+    exam_id          Int        @id @default(autoincrement())
+    title       String
+    description String?
+    startDate   DateTime
+    endDate     DateTime
+    minScore    Float      @default(80)
+    courseName  String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  // Relations
-  creator   User   @relation("ExamCreator", fields: [creatorId], references: [user_id])
-  creatorId Int
-  quizzes   Quiz[]
-  examSubmissions ExamSubmission[] 
+    // Relations
+    creator   User   @relation("ExamCreator", fields: [creatorId], references: [user_id])
+    creatorId Int
+    quizzes   Quiz[]
+    examSubmissions ExamSubmission[] 
 
-  @@index([creatorId])
-}
+    @@index([creatorId])
+  }
 
-model Quiz {
-  quiz_id          Int        @id @default(autoincrement())
-  instruction String
-  filename    String?
-  maxScore    Float      @default(100)
+  model Quiz {
+    quiz_id          Int        @id @default(autoincrement())
+    instruction String
+    filename    String?
+    filePath    String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  submission_limit Int?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    submission_limit Int?
 
-  // Relations
-  exam        Exam             @relation(fields: [examId], references: [exam_id])
-  examId      Int
-  submissions QuizSubmission[]
+    // Relations
+    exam        Exam             @relation(fields: [examId], references: [exam_id])
+    examId      Int
+    submissions QuizSubmission[]
 
-  @@index([examId])
-}
+    @@index([examId])
+  }
 
-model QuizSubmission {
-  quiz_submission_id        Int         @id @default(autoincrement())
-  answer    String?     // File name or text answer
-  score     Float?      // Student's score
-  feedback  String?     // Feedback from educator or AI
-  isCorrect Boolean?    // Manual/AI assessment
-  aiNote    String?     // AI comment
-  status    QuizStatus  @default(OPEN)
-  submission_count Int?
+  model QuizSubmission {
+    quiz_submission_id        Int         @id @default(autoincrement())
+    answer    String?     // File name or text answer
+    score     Float?      // Student's score
+    feedback  String?     // Feedback from educator or AI
+    isCorrect Boolean?    // Manual/AI assessment
+    aiNote    String?     // AI comment
+    status    QuizStatus  @default(OPEN)
+    submission_count Int?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  // Relations
-  student   User @relation(fields: [studentId], references: [user_id])
-  studentId Int
-  quiz      Quiz @relation(fields: [quizId], references: [quiz_id])
-  quizId    Int
+    // Relations
+    student   User @relation(fields: [studentId], references: [user_id])
+    studentId Int
+    quiz      Quiz @relation(fields: [quizId], references: [quiz_id])
+    quizId    Int
 
-  @@unique([studentId, quizId])
-  @@index([studentId])
-  @@index([quizId])
-}
+    @@unique([studentId, quizId])
+    @@index([studentId])
+    @@index([quizId])
+  }
 
 
-model ExamSubmission {
-  exam_submission_id        Int      @id @default(autoincrement())
+  model ExamSubmission {
+    exam_submission_id        Int      @id @default(autoincrement())
 
-  student   User     @relation(fields: [studentId], references: [user_id])
-  studentId Int
-  exam      Exam     @relation(fields: [examId], references: [exam_id])
-  examId    Int
+    student   User     @relation(fields: [studentId], references: [user_id])
+    studentId Int
+    exam      Exam     @relation(fields: [examId], references: [exam_id])
+    examId    Int
 
-  score     Float?
-  status ExamStatus @default(OPEN)
+    score     Float?
+    status ExamStatus @default(OPEN)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  @@unique([studentId, examId])
-}
+    @@unique([studentId, examId])
+  }

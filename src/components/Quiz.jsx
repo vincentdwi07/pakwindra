@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useRouter } from 'next/navigation'
 import Editor from "@monaco-editor/react"
 import '../styles/user.css'
+import Markdown from 'react-markdown'
 
 export default function Quiz({ exam, userId }) {
     const router = useRouter()
@@ -37,6 +38,7 @@ export default function Quiz({ exam, userId }) {
                 educator_note: submission?.feedback || null,
                 ai_note: submission?.aiNote || null,
                 educator_is_correct: submission?.isCorrect || false,
+                filePath: quiz.filePath || null,
                 submissionUpdatedAt: submission?.updatedAt 
                     ? new Date(submission.updatedAt).toLocaleString()
                     : null,
@@ -154,7 +156,7 @@ export default function Quiz({ exam, userId }) {
             setSubmitting(prev => ({ ...prev, [quizId]: false }))
         }
     }
-    // Render UI
+
     return (
         <div className="user-task">
             {/* Quiz Tabs */}
@@ -182,7 +184,11 @@ export default function Quiz({ exam, userId }) {
             <div className="task-content">
                 {Object.entries(quizzesData).map(([quizId, quiz]) => (
                     <div key={quizId} className={`instruction ${activeTab === quizId ? 'show' : ''}`}>
-                        <p>{quiz.instruction}</p>
+                        <p>Read the instruction below: </p>
+                        <iframe
+                            src={`${quiz.filePath}#toolbar=0&navpanes=0&scrollbar=0`}
+                            className="pdf-frame"
+                        ></iframe>
                         
                         <p>
                             {(quiz.submissionStatus === "GRADING" || quiz.submissionStatus === "GRADED")
@@ -225,7 +231,7 @@ export default function Quiz({ exam, userId }) {
                                     className="btn-submit-file-user m-0 mt-2"
                                     disabled={submitting[quizId] || !codes[quizId]?.trim()}
                                 >
-                                    {submitting[quizId] ? (<div class="loader"></div>): 'Submit'}
+                                    {submitting[quizId] ? (<div className="loader"></div>): 'Submit'}
                                 </button>
                             )
                         )}
@@ -241,7 +247,7 @@ export default function Quiz({ exam, userId }) {
                                 <div>
                                     <p className="text-body-secondary" style={{ fontSize: '1rem' }}>Feedbacks:</p>
                                     <h6 className="p-0 m-0">AI Feedbacks:</h6>
-                                    <p>{quiz.ai_note ?? 'No Feedback Added'}</p>
+                                    <Markdown>{quiz.ai_note ?? 'No Feedback Added'}</Markdown>
                                     <h6 className="p-0 m-0">Educator Feedbacks:</h6>
                                     <p>{quiz.educator_note === null ? 'No Feedback Added' : quiz.educator_note}</p>
                                     <p className="m-0 p-0 text-body-secondary">Conclusion:</p>
