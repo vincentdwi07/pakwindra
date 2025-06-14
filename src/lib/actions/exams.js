@@ -28,6 +28,19 @@ export const getExams = cache(async (userId, userRole) => {
                         }
                     }
                 }
+            }, 
+            examSubmissions: {
+                where: userRole === 'STUDENT' ? {
+                    studentId: userId
+                } : undefined,
+                select: {
+                    exam_submission_id: true,
+                    studentId: true,
+                    status: true,
+                    score: true,
+                    createdAt: true,
+                    updatedAt: true,
+                }
             }
         },
         orderBy: {
@@ -93,12 +106,14 @@ export const getCurrentUserExams = cache(async (userId, userRole) => {
 })
 
 export const getExamById = cache(async (examId, userId, userRole) => {
+    console.log('getExamById params:', { examId, userId, userRole });
     const now = new Date()
 
     const exam = await db.exam.findFirst({
         where: {
             exam_id: examId,
-            creatorId: userRole === 'EDUCATOR' ? userId : undefined
+            // creatorId: userRole === 'EDUCATOR' ? userId : undefined
+            ...(userRole === 'EDUCATOR' ? { creatorId: userId } : {})
         },
         include: {
             creator: {
@@ -115,7 +130,14 @@ export const getExamById = cache(async (examId, userId, userRole) => {
                     status: true,
                     score: true,
                     createdAt: true,
-                    updatedAt: true
+                    updatedAt: true,
+                    student: {  
+                        select: {
+                            user_id: true,
+                            name: true,
+                            email: true
+                        }
+                    }
                 }
             },
             quizzes: {
@@ -148,19 +170,24 @@ export const getExamById = cache(async (examId, userId, userRole) => {
             }
         }
     })
-
+    console.log('Raw exam data:', exam);
     if (!exam) {
-        return null
+        console.log('No exam found with criteria:', {
+            exam_id: examId,
+            creatorId: userRole === 'EDUCATOR' ? userId : 'not checked'
+        });
+        return null;
     }
 
     // Process exam data
     const processedExam = {
         ...exam,
+        students: exam.examSubmissions.map(submission => submission.student),
         quizzes: exam.quizzes.map(quiz => ({
             ...quiz,
-            // Tidak perlu slice karena sudah menggunakan take: 1
             submissions: quiz.submissions || []
         })),
+        examSubmission: exam.examSubmissions.find(sub => sub.studentId === userId) || null,
         progress: calculateExamProgress(exam, userId),
         timing: getExamTiming(exam, now)
     }

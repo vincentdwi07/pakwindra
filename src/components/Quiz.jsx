@@ -185,6 +185,7 @@ export default function Quiz({ exam, userId }) {
                 {Object.entries(quizzesData).map(([quizId, quiz]) => (
                     <div key={quizId} className={`instruction ${activeTab === quizId ? 'show' : ''}`}>
                         <p>Read the instruction below: </p>
+                        {/* <p>{quiz.instruction}</p> */}
                         <iframe
                             src={`${quiz.filePath}#toolbar=0&navpanes=0&scrollbar=0`}
                             className="pdf-frame"

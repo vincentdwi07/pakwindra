@@ -75,7 +75,7 @@ export default function MentorStudentList({ exam, examId, students, examSubmissi
                     const submission = examSubmissions?.find(sub => sub.studentId === student.user_id)
                 
                     return (
-                        <div key={student.id} className="exam-content p-0 mt-1 mb-2">
+                        <div key={student.user_id} className="exam-content p-0 mt-1 mb-2">
                             <div className="border-bottom d-flex gap-2 align-items-start" style={{ padding: "15px", paddingBottom: "7px" }}>
                                 <h4 style={{ verticalAlign: "-0.125em" }}><i className='bi bi-person-fill m-0 p-0'></i></h4>
                                 <h4 className="m-0">{student.name}</h4>
@@ -113,7 +113,7 @@ export default function MentorStudentList({ exam, examId, students, examSubmissi
                                     </div>
                                 <div>
                                     <Link
-                                        href={`${examId}/student/${student.id}`}
+                                        href={`${examId}/student/${student.user_id}`}
                                         className='btn btn-outline-dark'
                                     >
                                         Detail <i className="bi bi-arrow-right-short"></i>

@@ -11,11 +11,12 @@ export async function GET(request, { params }) {
         // Get student data
         const student = await db.user.findUnique({
             where: {
-                id: parseInt(studentId)
+                user_id: parseInt(studentId)
             },
             select: {
-                id: true,
-                name: true
+                user_id: true,
+                name: true,
+                email: true
             }
         })
 
@@ -32,10 +33,20 @@ export async function GET(request, { params }) {
         // Get exam and quiz data
         const examWithQuizzes = await db.exam.findUnique({
             where: { 
-                id: parseInt(examId)
+                exam_id: parseInt(examId)
             },
             include: {
-                quizzes: true
+                quizzes: {
+                    orderBy: {
+                        quiz_id: 'asc'
+                    },
+                    select: {
+                        quiz_id: true,
+                        instruction: true,
+                        filePath: true,
+                        submission_limit: true
+                    }
+                }
             }
         })
 
@@ -53,9 +64,12 @@ export async function GET(request, { params }) {
         const submissions = await db.quizSubmission.findMany({
             where: {
                 quizId: { 
-                    in: examWithQuizzes.quizzes.map(q => q.id)
+                    in: examWithQuizzes.quizzes.map(q => q.quiz_id)
                 },
                 studentId: parseInt(studentId)
+            },
+            orderBy: {
+                createdAt: 'desc'
             }
         })
 
@@ -64,18 +78,22 @@ export async function GET(request, { params }) {
 
         // Combine data
         const quizzes = examWithQuizzes.quizzes.map(quiz => {
-            const submission = submissions.find(sub => sub.quizId === quiz.id)
+            const submission = submissions.find(sub => sub.quizId === quiz.quiz_id)
             return {
-                quizId: quiz.id,
-                instruction: quiz.instruction,
-                maxScore: quiz.maxScore,
-                language: quiz.language || 'python',
-                submissionId: submission?.id,
-                status: submission?.status || 'OPEN',
-                answer: submission?.answer || '',
-                feedback: submission?.feedback || null,
-                aiNote: submission?.aiNote || null,
-                isCorrect: submission?.isCorrect || false
+                quiz_id: quiz.quiz_id,
+                instruction: quiz.instruction || '',
+                filePath: quiz.filePath,
+                submission_limit: quiz.submission_limit,
+                submission: submission ? {
+                    quiz_submission_id: submission.quiz_submission_id,
+                    status: submission.status,
+                    answer: submission.answer || '',
+                    feedback: submission.feedback,
+                    aiNote: submission.aiNote,
+                    score: submission.score,
+                    createdAt: submission.createdAt,
+                    updatedAt: submission.updatedAt
+                } : null
             }
         })
 

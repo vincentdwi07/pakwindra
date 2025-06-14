@@ -2,17 +2,15 @@ import Link from 'next/link'
 
 export default function ExamContent({
                                         id,
-                                        subject,
                                         title,
                                         description,
                                         status,
                                         score,
-                                        userId,
-                                        // minScore,
+                                        courseName,
+                                        creatorName,
                                         startDate,
                                         endDate,
-                                        quizCount,
-                                        studentId
+                                        quizzes
                                     }) {
     const formatDate = (date) => {
         return new Date(date).toLocaleString('en-US', {
@@ -24,6 +22,8 @@ export default function ExamContent({
             hour12: true
         })
     }
+
+    const quizCount = quizzes.length || 0
 
     const now = new Date() // Using the provided current time
     const hasStarted = now >= new Date(startDate)
@@ -94,7 +94,7 @@ export default function ExamContent({
         <>
             <div className="exam-content">
                 <div className="d-flex justify-content-between exam-content-head column-gap-3 flex-wrap">
-                        <p>{subject} | {title}</p>
+                        <p>{courseName} | {creatorName}</p>
                     <p><span><i className="bi bi-calendar2-week-fill me-2"></i></span>
                         Due {formatDate(endDate)}
                     </p>

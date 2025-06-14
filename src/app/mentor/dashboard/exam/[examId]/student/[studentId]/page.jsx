@@ -12,43 +12,67 @@ export default function MentorStudentExamDetail() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
-   const fetchQuizzes = useCallback(async () => {
+    console.log("quizzes: ",quizzes);
+
+    const fetchQuizzes = useCallback(async () => {
         try {
             setLoading(true)
             setError(null)
 
+            // Validate params
             if (!examId || !studentId) {
                 throw new Error('Missing examId or studentId')
             }
 
-            const res = await fetch(`/api/exam/${examId}/student/${studentId}/quiz-submissions`)
-            
-            // If response is not ok, try to get error details
+            // Log request params
+            console.log('Fetching quizzes for:', { examId, studentId })
+
+            const res = await fetch(`/api/exam/${examId}/student/${studentId}/quiz-submissions`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+                
+            // Get response text first for debugging
+            const responseText = await res.text()
+            console.log('Raw response:', responseText)
+
+            // Try to parse as JSON
+            let data
+            try {
+                data = JSON.parse(responseText)
+            } catch (parseError) {
+                console.error('JSON parse error:', parseError)
+                throw new Error(`Invalid JSON response: ${responseText}`)
+            }
+
+            // If response is not ok, handle error
             if (!res.ok) {
-                const errorData = await res.json().catch(() => null)
                 throw new Error(
-                    errorData?.error || 
+                    data?.error || 
+                    data?.message || 
                     `Server error (${res.status})`
                 )
             }
 
-            // Try to parse response as JSON
-            const data = await res.json()
-
             // Validate response structure
             if (!data || !data.student || !Array.isArray(data.quizzes)) {
+                console.error('Invalid response structure:', data)
                 throw new Error('Invalid response format')
             }
 
             // Update state with response data
             setQuizzes(data.quizzes)
             setStudent(data.student)
+            setError(null)
 
         } catch (err) {
             console.error('Error fetching quizzes:', {
-                error: err,
+                message: err.message,
                 examId,
-                studentId
+                studentId,
+                stack: err.stack
             })
             setError(err.message || 'Failed to load quiz data')
             setQuizzes([])
@@ -103,9 +127,7 @@ export default function MentorStudentExamDetail() {
                 
                 {loading ? (
                     <div className="d-flex justify-content-center">
-                        <div className="spinner-border" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                        </div>
+                        <div className="loader"></div>
                     </div>
                 ) : (
                     <MentorDetailStudentQuiz 

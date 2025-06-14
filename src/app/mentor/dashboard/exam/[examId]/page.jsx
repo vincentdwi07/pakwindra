@@ -10,6 +10,12 @@ export default async function MentorExamDetail({ params }) {
     const session = await getServerSession(authOptions)
     const examId = Number(params.examId)
 
+    console.log('Session:', {
+        userId: session?.user?.id,
+        role: session?.user?.role
+    });
+    console.log('ExamId:', examId);
+
     if (isNaN(examId)) {
         throw new Error('Invalid exam ID')
     }
@@ -19,7 +25,13 @@ export default async function MentorExamDetail({ params }) {
     }
 
     const exam = await getExamById(examId, parseInt(session.user.id), session.user.role);
-    
+    console.log('Exam found:', exam ? 'Yes' : 'No');
+    console.log('Creator ID check:', {
+        examCreatorId: exam?.creatorId,
+        sessionUserId: session.user.id
+    });
+
+
     if (!exam) {
         return <div>Exam not found</div>
     }

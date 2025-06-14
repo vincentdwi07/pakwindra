@@ -24,22 +24,24 @@ export default async function Home() {
       <div className="user-dashboard position-relative">
         <UserNavbar/>
         <div className="user-dashboard-content">
-            <h3>Welcome, {session.user.name}!</h3>
+            <h3>Welcome Student, {session.user.name}!</h3>
 
-          {exams.map(exam => (
+
+            {exams.map(exam => (
               <ExamContent
-                  key={exam.exam_id}  // Changed from id to exam_id
-                  id={exam.exam_id}   // Changed from id to exam_id
-                  subject={exam.title.split(':')[0] || 'General'}
+                  key={exam.exam_id} 
+                  id={exam.exam_id}   
                   title={exam.title}
                   description={exam.description}
-                  status={"OPEN"}
-                  score={exam.quizzes[0]?.submissions[0]?.score || null}
-                  userId={exam.creatorId}
+                  courseName={exam.courseName}
+                  creatorName={exam.creator.name}
+                  creator={exam.creator}
+                  quizzes={exam.quizzes}
                   startDate={exam.startDate}
                   endDate={exam.endDate}
-                  quizCount={exam.quizzes.length}
+                  userRole={userRole}
                   studentId={studentId}
+                  status={exam.examSubmissions.status || 'OPEN'}
               />
           ))}
 
