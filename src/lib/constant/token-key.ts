@@ -1,0 +1,1 @@
+export const OPENAI_API_KEY : string | undefined = process.env.OPENAI_API_KEY

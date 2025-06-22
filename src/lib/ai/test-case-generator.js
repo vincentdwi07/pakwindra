@@ -1,11 +1,12 @@
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RunnableSequence } from '@langchain/core/runnables';
-import { getOllamaModel } from "@/lib/ai/ollama-instance";
+import { getModelAI } from "@/lib/ai/ollama-instance";
 
+// TODO : unused
 export async function generateTestCases(question) {
     // Initialize the Ollama model
-    const model = getOllamaModel();
+    const model = getModelAI();
 
     // Create prompt template for test case generation
     const promptTemplate = PromptTemplate.fromTemplate(`

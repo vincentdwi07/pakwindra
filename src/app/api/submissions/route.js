@@ -4,9 +4,12 @@ import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { evaluateCode } from "@/lib/ai/code-evaluator"
+import { promises as fs } from 'fs'
+import path from 'path'
+import pdfParse from 'pdf-parse'
+import {extractPDFText} from "@/lib/utils/pdfReader";
 
 export async function POST(request) {
-    console.log('API Route: POST /api/submissions called')
     
     try {
         // Authentication checks
@@ -24,6 +27,11 @@ export async function POST(request) {
         if (!user) {
             console.log('User not found in database')
             return NextResponse.json({ error: 'User not found' }, { status: 401 })
+        }
+
+        if (user.role === 'EDUCATOR') {
+            console.log('User role is educator, denied quiz submission!')
+            return NextResponse.json({ error: 'Educator cannot submit exam, so user must be student only' }, { status: 401 })
         }
 
         // Parse request body
@@ -58,6 +66,63 @@ export async function POST(request) {
 
         // Database operations
         try {
+            // get quiz data
+            const quizData = await db.quiz.findFirst({
+                where: {
+                    quiz_id: parseInt(quizId)
+                }
+            });
+            if (!quizData) {
+                return NextResponse.json({
+                    error: 'Quiz not found',
+                    details: `Quiz with id ${quizId} not found.`
+                }, { status: 404 })
+            }
+
+            /*const quizzesPath = process.env.QUIZZES_PATH
+            const relativeFilePath = quizData.filePath; // e.g., '/instructionFiles/1750494325690-Example-questions-text-only4.pdf'
+            const absoluteFilePath = path.join(process.cwd(), quizzesPath, relativeFilePath);
+            console.log(absoluteFilePath)
+            const pdfBuffer = await fs.readFile(absoluteFilePath);
+            const data = await pdfParse(pdfBuffer);
+            const questionText = data.text;
+
+            console.log("Pdf read : " + questionText);*/
+
+            // Section PDF Read
+            // Extract PDF text using the utility function
+            let questionText = ''
+            try {
+                if (quizData.filePath) {
+                    console.log('Extracting PDF content for quiz:', quizId)
+                    questionText = await extractPDFText(quizData.filePath)
+                    console.log('PDF extraction successful. Text length:', questionText.length)
+                    console.log('PDF content preview:', questionText)
+                } else {
+                    console.log('No file path found for quiz:', quizId)
+                    // Fallback to instruction text if no PDF file
+                    questionText = quizData.instruction || ''
+                }
+            } catch (pdfError) {
+                console.error('PDF extraction failed:', pdfError)
+                // Return error response for PDF extraction failure
+                return NextResponse.json({
+                    error: 'Failed to read quiz content',
+                    details: `Unable to extract content from PDF: ${pdfError.message}`
+                }, { status: 500 })
+            }
+
+            // Validate that we have question content
+            if (!questionText || questionText.trim().length === 0) {
+                return NextResponse.json({
+                    error: 'No quiz content found',
+                    details: 'Unable to extract question text from the quiz file'
+                }, { status: 500 })
+            }
+            // End Section PDF Read
+
+
+            // get submission
             const existingSubmission = await db.quizSubmission.findFirst({
                 where: {
                     AND: [
@@ -110,15 +175,10 @@ export async function POST(request) {
             })
 
             // Start background AI evaluation
-            const question = `Dengan penggalan program berikut:
-                a = [3, 1, 5, 3, 8, 1, 0]
-                b = [3, 1, 5, 3, 8, 2, 0]
-                Uji apakah kedua array memiliki elemen yang sama. Jika sama, tampilkan sama, jika ada 1 saja yang tidak sama, tampilkan tidak sama.`
-
             // Use Promise to handle background processing
             Promise.resolve().then(async () => {
                 try {
-                    const aiResponse = await evaluateCode(answer, question)
+                    const { aiResponse, isCorrect } = await evaluateCode(answer, questionText)
                     
                     await db.quizSubmission.update({
                         where: { 
@@ -127,7 +187,7 @@ export async function POST(request) {
                         data: {
                             status: 'GRADED',
                             aiNote: aiResponse,
-                            isCorrect: true,
+                            isCorrect: isCorrect,
                             updatedAt: new Date()
                         }
                     })
