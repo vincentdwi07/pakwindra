@@ -49,6 +49,7 @@ export default async function MentorExamDetail({ params }) {
                     examId={exam.exam_id}
                     students={exam.students}
                     examSubmissions={exam.examSubmissions}
+                    timing={exam.timing}
                 />
             </div>
         </div>

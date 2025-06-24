@@ -30,8 +30,12 @@ interface DeepSeekConfig extends BaseModelConfig {
     // DeepSeek specific
 }
 
+interface OpenRouterConfig extends BaseModelConfig {
+    // DeepSeek specific
+}
+
 // A union type for all possible configurations
-export type LLMConfig = OllamaConfig | OpenAIConfig | DeepSeekConfig;
+export type LLMConfig = OllamaConfig | OpenAIConfig | DeepSeekConfig | OpenRouterConfig;
 
 // A map to store initialized model instances, keyed by a unique identifier
 const modelInstances = new Map<string, any>(); // Use 'any' or a more complex union type for ChatModel instances
@@ -62,7 +66,7 @@ function generateModelCacheKey(
  */
 export function getChatModel(
     provider: LLMProvider,
-    modelName: string,
+    modelName: string = "",
     config: LLMConfig = {} // Default empty config
 ): any { // Return type is 'any' because it can be ChatOllama, ChatOpenAI, etc.
     const cacheKey = generateModelCacheKey(provider, modelName, config);
@@ -118,13 +122,15 @@ export function getChatModel(
             break;
 
         case 'openrouter':
-            const openrouterConfig = config as ChatOpenAI;
             /*if (!process.env.DEEPSEEK_API_KEY) {
                 throw new Error("DEEPSEEK_API_KEY environment variable is not set for DeepSeek models.");
             }*/
+            const openrouterConfig = config as OpenRouterConfig;
             modelInstance = new ChatOpenAI({
-                model: "deepseek/deepseek-r1-0528:free",
-                temperature: 0.9,
+                // model: "deepseek/deepseek-r1-0528:free",
+                // temperature: 0.9,
+                model: modelName,
+                temperature: openrouterConfig.temperature ?? 0.7,
                 configuration: {
                     baseURL: "https://openrouter.ai/api/v1",
                 },
@@ -134,40 +140,6 @@ export function getChatModel(
                 verbose: true
             });
         break;
-
-        // Add cases for other providers here (e.g., 'anthropic', 'google')
-        // Remember to install their respective @langchain/integrations packages:
-        // npm install @langchain/anthropic @langchain/google-genai
-
-        /*
-        case 'anthropic':
-            // npm install @langchain/anthropic
-            const anthropicConfig = config as AnthropicConfig;
-            if (!process.env.ANTHROPIC_API_KEY) {
-                throw new Error("ANTHROPIC_API_KEY environment variable is not set for Anthropic models.");
-            }
-            modelInstance = new ChatAnthropic({
-                model: modelName,
-                temperature: anthropicConfig.temperature ?? 0.7,
-                anthropicApiKey: process.env.ANTHROPIC_API_KEY,
-            });
-            break;
-        */
-
-        /*
-        case 'google':
-            // npm install @langchain/google-genai
-            const googleConfig = config as GoogleConfig;
-            if (!process.env.GOOGLE_API_KEY) {
-                throw new Error("GOOGLE_API_KEY environment variable is not set for Google models.");
-            }
-            modelInstance = new ChatGoogleGenerativeAI({
-                model: modelName,
-                temperature: googleConfig.temperature ?? 0.7,
-                apiKey: process.env.GOOGLE_API_KEY,
-            });
-            break;
-        */
 
         default:
             throw new Error(`Unsupported LLM provider: ${provider}`);

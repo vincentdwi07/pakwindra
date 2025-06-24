@@ -38,19 +38,16 @@ export default async function Home() {
       
       <div className="user-dashboard position-relative">
         <MentorNavbar/>
-        <div className="user-dashboard-content">
+        <div className="user-dashboard-content w-100">
             <h3>Welcome Educator, {session.user.name}!</h3>
           {exams.map(exam => (
               <MentorExamContent
                   key={exam.exam_id}
                   id={exam.exam_id}
-                  subject={exam.title.split(':')[0] || 'General'} 
+                  courseName={exam.courseName} 
                   title={exam.title}
                   description={exam.description}
-                  status={exam.status}
-                  score={exam.quizzes[0]?.submissions[0]?.score || null} 
-                  userId={exam.creatorId}
-                  // minScore={exam.minScore}
+                  creator = {exam.creator.name}
                   startDate={exam.startDate}
                   endDate={exam.endDate}
                   quizCount={exam.quizzes.length}

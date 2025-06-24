@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from "next/link"
 
-export default function MentorStudentList({ exam, examId, students, examSubmissions }) {
+export default function     MentorStudentList({ exam, examId, students, examSubmissions, timing }) {
     const [searchTerm, setSearchTerm] = useState('')
 
     const filteredStudents = students?.filter(student => 
@@ -90,26 +90,30 @@ export default function MentorStudentList({ exam, examId, students, examSubmissi
                                             <div>
                                             {submission?.score !== undefined && (
                                                 submission.score < exam?.minScore ? (
-                                                <span className="mentor-pill-badge bg-red text-danger">{submission.score}/100</span>
+                                                <p className="mentor-pill-badge bg-red text-danger mb-0">{submission.score}/100</p>
                                                 ) : (
-                                                <span className="mentor-pill-badge bg-green text-success">{submission.score}/100</span>
+                                                <p className="mentor-pill-badge bg-green text-success mb-0">{submission.score}/100</p>
                                                 )
                                             )}
                                             </div>
                                             <div>
                                                 {submission?.updatedAt && exam?.endDate && (
                                                     <>
-                                                        <p>Tanggal diserahkan: {formatDateIndo(submission.updatedAt)}</p>
                                                         {new Date(submission.updatedAt) <= new Date(exam.endDate) ? (
-                                                            <p className="mentor-pill-badge bg-green text-success">{submission.updatedAt}</p>
+                                                            <p className="mentor-pill-badge bg-green text-success mb-0">{formatDateIndo(submission.updatedAt)}</p>
                                                         ) : (
-                                                            <p className="mentor-pill-badge bg-red text-danger">{submission.updatedAt}</p>
+                                                            <p className="mentor-pill-badge bg-red text-danger mb-0">{formatDateIndo(submission.updatedAt)}</p>
                                                         )}
                                                     </>
                                                 )}
                                             </div>
                                         </>
                                         )}
+                                        <div>
+                                            {timing?.status === 'ended' ? (
+                                                <p className='mentor-pill-badge bg-red text-danger mb-0'>Past Due Date</p>
+                                            ) : ''}
+                                        </div>
                                     </div>
                                 <div>
                                     <Link

@@ -25,7 +25,7 @@ export default function Quiz({ exam, userId }) {
         return initialCodes
     })
 
-    // State untuk quiz data
+    // State untuk quiz data - dengan data submission yang lebih akurat
     const [quizzesData, setQuizzesData] = useState(() => {
         if (!exam?.quizzes) return {}
 
@@ -34,11 +34,14 @@ export default function Quiz({ exam, userId }) {
             acc[quiz.quiz_id] = {
                 key: quiz.quiz_id,
                 instruction: quiz.instruction,
+                quizSubmissionLimit: quiz.submission_limit || "Unlimited",
                 submissionStatus: submission?.status || 'OPEN',
                 educator_note: submission?.feedback || null,
                 ai_note: submission?.aiNote || null,
                 educator_is_correct: submission?.isCorrect || false,
                 filePath: quiz.filePath || null,
+                // PERBAIKAN: Ambil submission_count dari database, bukan hardcode 0
+                submissionCount: submission?.submission_count || 0,
                 submissionUpdatedAt: submission?.updatedAt 
                     ? new Date(submission.updatedAt).toLocaleString()
                     : null,
@@ -46,6 +49,47 @@ export default function Quiz({ exam, userId }) {
             return acc
         }, {})
     })
+
+    // Fungsi untuk refresh data dari database
+    const refreshData = async () => {
+        try {
+            const response = await fetch(`/api/submissions?examId=${exam.exam_id}&studentId=${userId}`)
+            const data = await response.json()
+            if (response.ok && data.quizzes) {
+                setQuizzesData(prev => {
+                    const newData = { ...prev }
+                    data.quizzes.forEach(quiz => {
+                        newData[quiz.quiz_id] = {
+                            ...newData[quiz.quiz_id],
+                            submissionStatus: quiz.status,
+                            ai_note: quiz.ai_note,
+                            educator_is_correct: quiz.is_correct,
+                            educator_note: quiz.educator_note,
+                            // PENTING: Update submissionCount dari database
+                            submissionCount: quiz.submission_count || 0,
+                            submissionUpdatedAt: quiz.updatedAt 
+                                ? new Date(quiz.updatedAt).toLocaleString()
+                                : null
+                        }
+                    })
+                    return newData
+                })
+            }
+        } catch (error) {
+            console.error('Failed to refresh data:', error)
+        }
+    }
+
+    // Auto refresh data saat component mount
+    useEffect(() => {
+        refreshData()
+    }, [exam.exam_id, userId])
+
+    // Auto refresh data setiap 30 detik untuk memastikan data selalu update
+    useEffect(() => {
+        const autoRefreshInterval = setInterval(refreshData, 30000) // 30 detik
+        return () => clearInterval(autoRefreshInterval)
+    }, [exam.exam_id, userId])
 
     // Memoize handleCodeChange
     const handleCodeChange = useCallback((value, quizId) => {
@@ -55,61 +99,77 @@ export default function Quiz({ exam, userId }) {
         }))
     }, [])
 
-    // Polling effect dengan pengecekan status saja
+    // Enhanced polling effect - lebih agresif untuk update real-time
     useEffect(() => {
-        const hasGradingSubmissions = Object.values(quizzesData)
-            .some(quiz => quiz.submissionStatus === 'GRADING')
+        let pollInterval
 
-        if (!hasGradingSubmissions) return
+        const startPolling = () => {
+            pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/api/submissions?examId=${exam.exam_id}&studentId=${userId}`)
+                    const data = await response.json()
+                    
+                    if (response.ok && data.quizzes) {
+                        setQuizzesData(prev => {
+                            const newData = { ...prev }
+                            let hasUpdates = false
 
-        const pollInterval = setInterval(async () => {
-            try {
-                const response = await fetch(`/api/submissions?examId=${exam.exam_id}&studentId=${userId}`)
-                const data = await response.json()
-                
-                if (response.ok) {
-                    setQuizzesData(prev => {
-                        const newData = { ...prev }
-                        let hasUpdates = false
-
-                        data.quizzes.forEach(quiz => {
-                            if (newData[quiz.quiz_id] && prev[quiz.quiz_id].submissionStatus === 'GRADING') {
-                                hasUpdates = true
-                                newData[quiz.quiz_id] = {
-                                    ...prev[quiz.quiz_id],
-                                    submissionStatus: quiz.status,
-                                    ai_note: quiz.ai_note,
-                                    educator_is_correct: quiz.is_correct,
-                                    educator_note: quiz.educator_note,
-                                    submissionUpdatedAt: quiz.updatedAt 
-                                        ? new Date(quiz.updatedAt).toLocaleString()
-                                        : null
+                            data.quizzes.forEach(quiz => {
+                                if (newData[quiz.quiz_id] && 
+                                    (prev[quiz.quiz_id].submissionStatus !== quiz.status ||
+                                     prev[quiz.quiz_id].submissionCount !== quiz.submission_count ||
+                                     prev[quiz.quiz_id].ai_note !== quiz.ai_note ||
+                                     prev[quiz.quiz_id].educator_note !== quiz.educator_note)) {
+                                    hasUpdates = true
+                                    newData[quiz.quiz_id] = {
+                                        ...prev[quiz.quiz_id],
+                                        submissionStatus: quiz.status,
+                                        ai_note: quiz.ai_note,
+                                        educator_is_correct: quiz.is_correct,
+                                        educator_note: quiz.educator_note,
+                                        submissionCount: quiz.submission_count || prev[quiz.quiz_id].submissionCount,
+                                        submissionUpdatedAt: quiz.updatedAt 
+                                            ? new Date(quiz.updatedAt).toLocaleString()
+                                            : null
+                                    }
                                 }
-                            }
+                            })
+
+                            return hasUpdates ? newData : prev
                         })
-
-                        return hasUpdates ? newData : prev
-                    })
-
-                    if (data.quizzes.every(quiz => quiz.status !== 'GRADING')) {
-                        clearInterval(pollInterval)
                     }
+                } catch (error) {
+                    console.error('Polling error:', error)
                 }
-            } catch (error) {
-                console.error('Polling error:', error)
-            }
-        }, 2000)
+            }, 2000) // Poll setiap 2 detik
+        }
 
-        return () => clearInterval(pollInterval)
+        // Mulai polling
+        startPolling()
+
+        // Cleanup
+        return () => {
+            if (pollInterval) {
+                clearInterval(pollInterval)
+            }
+        }
     }, [exam.exam_id, userId, quizzesData])
 
-    // Handle submission dengan mempertahankan code
+    // Handle submission dengan update yang lebih akurat
     const handleSubmit = async (event, quizId) => {
         event.preventDefault()
         
         const currentCode = codes[quizId]
         if (!currentCode?.trim()) {
             setError('Please enter your code before submitting')
+            return
+        }
+
+        // PERBAIKAN: Cek submission limit sebelum submit
+        const currentQuiz = quizzesData[quizId]
+        if (currentQuiz.quizSubmissionLimit !== "Unlimited" && 
+            currentQuiz.submissionCount >= currentQuiz.quizSubmissionLimit) {
+            setError('You have reached the submission limit for this quiz')
             return
         }
 
@@ -138,16 +198,22 @@ export default function Quiz({ exam, userId }) {
                 throw new Error(data.error || data.details || 'Server error')
             }
 
-            // Update hanya status, bukan code
+            // PERBAIKAN: Update status dan increment submissionCount
             setQuizzesData(prev => ({
                 ...prev,
                 [quizId]: {
                     ...prev[quizId],
                     submissionStatus: 'GRADING',
                     educator_is_correct: false,
-                    ai_note: "AI evaluation in progress..."
+                    ai_note: "AI evaluation in progress...",
+                    submissionCount: (prev[quizId].submissionCount || 0) + 1
                 }
             }))
+
+            // TAMBAHAN: Auto refresh setelah submit untuk sinkronisasi langsung
+            setTimeout(() => {
+                refreshData()
+            }, 500) // Refresh lebih cepat setelah submit
             
         } catch (error) {
             console.error('Submission error:', error)
@@ -181,24 +247,22 @@ export default function Quiz({ exam, userId }) {
             </div>
 
             {/* Quiz Content */}
-            <div className="task-content">
-                {Object.entries(quizzesData).map(([quizId, quiz]) => (
+            <div className="task-content position-relative">{Object.entries(quizzesData).map(([quizId, quiz]) => (
                     <div key={quizId} className={`instruction ${activeTab === quizId ? 'show' : ''}`}>
-                        <p>Read the instruction below: </p>
-                        {/* <p>{quiz.instruction}</p> */}
+                        <p className="fw-bold mb-1">Read instruction below: </p>
                         <iframe
                             src={`${quiz.filePath}#toolbar=0&navpanes=0&scrollbar=0`}
                             className="pdf-frame"
                         ></iframe>
                         
-                        <p>
+                        <p className="fw-bold mb-2 mt-5">
                             {(quiz.submissionStatus === "GRADING" || quiz.submissionStatus === "GRADED")
                                 ? "Your answer review:"
                                 : "Input your answer here:"}
                         </p>
 
                         <Editor
-                            key={`editor-${quizId}`}  // Add key untuk memastikan value tetap
+                            key={`editor-${quizId}`}
                             height="400px"
                             language="python"
                             value={codes[quizId] || ''}
@@ -216,32 +280,51 @@ export default function Quiz({ exam, userId }) {
                             }}
                         />
 
-                        {quiz?.submissionStatus === "GRADED" && (
-                            <p className="text-muted">Submitted at: {quiz?.submissionUpdatedAt || 'No update time'}</p>
-                        )}
-
-                        {/* Submit Button */}
-                        {quiz.submissionStatus === "GRADING" ? (
-                            <p className="text-muted bg-body-secondary p-3 text-center rounded-1 m-0">
-                                Your answer is being reviewed by AI. This process usually takes 2-5 mins
-                            </p>
-                        ) : (
-                            !(quiz.submissionStatus === "GRADED" && quiz.educator_is_correct) && (
-                                <button 
-                                    onClick={(e) => handleSubmit(e, quizId)}
-                                    className="btn-submit-file-user m-0 mt-2"
-                                    disabled={submitting[quizId] || !codes[quizId]?.trim()}
-                                >
-                                    {submitting[quizId] ? (<div className="loader"></div>): 'Submit'}
-                                </button>
+                        {quiz.submissionStatus === "GRADED" && quiz.educator_is_correct ? null : (
+                            quiz.quizSubmissionLimit === "Unlimited" ? (
+                                // Unlimited: bisa submit kapan saja, kecuali sedang GRADING
+                                quiz.submissionStatus === "GRADING" ? (
+                                    <p className="text-muted bg-body-secondary p-3 text-center rounded-1 m-0">
+                                        Your answer is being reviewed by AI. This process usually takes 2-5 mins. Do not close or refresh the browser or tab!
+                                    </p>
+                                ) : (
+                                    <button
+                                        onClick={(e) => handleSubmit(e, quizId)}
+                                        className="btn-submit-file-user m-0 mt-2"
+                                        disabled={submitting[quizId] || !codes[quizId]?.trim()}
+                                    >
+                                        {submitting[quizId] ? (<div className="loader"></div>) : 'Submit'}
+                                    </button>
+                                )
+                            ) : (
+                                // Limited: cek sisa attempt dan status
+                                <>
+                                    <p className="text-muted mb-2 mt-2">
+                                        Submission attempt left: {Math.max(0, quiz.quizSubmissionLimit - quiz.submissionCount)}
+                                    </p>
+                                    
+                                    {quiz.submissionCount < quiz.quizSubmissionLimit ? (
+                                        quiz.submissionStatus === "GRADING" ? (
+                                            <p className="text-muted bg-body-secondary p-3 text-center rounded-1 m-0">
+                                                Your answer is being reviewed by AI. This process usually takes 2-5 mins. Do not close or refresh the browser!
+                                            </p>
+                                        ) : (
+                                            <button
+                                                onClick={(e) => handleSubmit(e, quizId)}
+                                                className="btn-submit-file-user m-0 mt-2"
+                                                disabled={submitting[quizId] || !codes[quizId]?.trim()}
+                                            >
+                                                {submitting[quizId] ? (<div className="loader"></div>) : 'Submit'}
+                                            </button>
+                                        )
+                                    ) : ('')}
+                                </>
                             )
                         )}
 
                         {/* Status Messages */}
                         {error && <div className="text-danger mt-2">{error}</div>}
                         
-                        {/* <p>Status: {quiz.submissionStatus}</p> */}
-
                         {/* Feedback Section */}
                         {quiz.submissionStatus === 'GRADED' && (
                             <div className={`user-exam-feedback ${quiz.educator_is_correct ? 'correct' : 'false'}`}>

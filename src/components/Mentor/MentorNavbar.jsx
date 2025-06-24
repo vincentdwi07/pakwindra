@@ -38,7 +38,7 @@ export default function UserNavbar() {
         <>
             <div className="d-flex flex-column user-navbar d-none d-sm-flex shadow">
                 <Link href="/mentor/dashboard" className=" p-3 link-body-emphasis d-flex justify-content-center align-items-center text-decoration-none border-bottom" title="Icon-only" data-bs-toggle="tooltip" data-bs-placement="right">
-                    <img src="https://res-console.cloudinary.com/dxe6jlzv7/thumbnails/v1/image/upload/v1748450067/dXNlci1sb2dpbi1sb2dvX3lpZWN2cQ==/drilldown" style={{ height: '30px' }} alt=""/>
+                    <img src="https://i.imgur.com/7GDicHy.png" style={{ height: '30px' }} alt=""/>
                     <span className="visually-hidden">Icon-only</span>
                 </Link>
                 <ul className="nav nav-pills nav-flush d-flex flex-column mb-auto text-center">

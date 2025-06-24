@@ -35,7 +35,7 @@ export default async function UserLogin() {
                 </div>
             </div>
             <div className="user-login-right-side">
-                <img className="mb-3" src="user-login-logo.svg" alt=""/>
+                <img className="mb-3" src="https://i.imgur.com/7GDicHy.png" alt=""/>
                 <h2 className="fw-bold">Welcome Back!</h2>
                 <p className="mb-5" style={{fontSize: "14px"}}>Please enter your Details</p>
                 <LoginForm />

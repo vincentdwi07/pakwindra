@@ -42,12 +42,9 @@ export default function RegisterForm() {
             router.refresh()
 
             // Redirect based on user role
-            if (result.user?.role === 'EDUCATOR') {
-                router.push('/dashboard/educator')
-            } else {
+
                 // router.push('/dashboard/student')
-                router.push('/')
-            }
+            router.push('/')
         } catch (err) {
             setError('An unexpected error occurred')
         } finally {
@@ -123,7 +120,11 @@ export default function RegisterForm() {
                     disabled={loading}
                     className="w-100 outline-0 border-0 p-2 mt-3 d-flex justify-content-center align-items-center rounded-2 bg-dark text-light fw-bold shadow">
                 {loading ? (
-                    <div className="loading-bar"></div>
+                    <>
+                        <div className="d-flex justify-content-center text-center">
+                            <div className="loader"></div>
+                        </div>
+                    </>
                 ) : 'Register'}
             </button>
 

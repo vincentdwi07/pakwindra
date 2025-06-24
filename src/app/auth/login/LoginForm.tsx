@@ -127,7 +127,13 @@ export default function LoginForm() {
                 disabled={loading}
                 className="w-100 outline-0 border-0 fw-bold p-2 rounded-2 bg-dark text-light shadow"
             >
-                {loading ? 'LOGGING IN...' : 'LOGIN'}
+                {loading ? (
+                    <>
+                        <div className="d-flex justify-content-center text-center">
+                            <div className="loader"></div>
+                        </div>
+                    </>
+                ) : 'LOGIN'}
             </button>
         </form>
     )

@@ -23,7 +23,7 @@ export default async function Home() {
     <>
       <div className="user-dashboard position-relative">
         <UserNavbar/>
-        <div className="user-dashboard-content">
+        <div className="user-dashboard-content w-100">
             <h3>Welcome Student, {session.user.name}!</h3>
 
 
@@ -37,11 +37,13 @@ export default async function Home() {
                   creatorName={exam.creator.name}
                   creator={exam.creator}
                   quizzes={exam.quizzes}
-                  startDate={exam.startDate}
+                  // startDate={exam.startDate}
                   endDate={exam.endDate}
                   userRole={userRole}
                   studentId={studentId}
-                  status={exam.examSubmissions.status || 'OPEN'}
+                  score={exam.examSubmissions?.[0]?.score ?? null}
+                  status={exam.examSubmissions?.[0]?.status ?? 'OPEN'}
+                  timing={exam.timing} 
               />
           ))}
 

@@ -1,8 +1,11 @@
+// UNTUK MENYIMPULKAN isCorrect == 1 || 0
+
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RunnableSequence } from '@langchain/core/runnables';
 import {PROMPT_JUDGE_RESULT} from "@/lib/constant/ai-prompt";
 import {ChatOllama} from "@langchain/ollama";
+// import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 
 // TODO : unused
 export async function codeJudge(feedback: string, model: ChatOllama) {

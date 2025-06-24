@@ -1,10 +1,10 @@
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RunnableSequence } from '@langchain/core/runnables';
-import { getModelAI } from "@/lib/ai/ollama-instance";
-import { generateTestCases } from "@/lib/ai/test-case-generator";
+// import { getModelAI } from "@/lib/ai/ollama-instance";
 import {PROMPT_CONTEXT, PROMPT_CONTEXT_INDO} from "@/lib/constant/ai-prompt";
 import {ChatOllama} from "@langchain/ollama";
+// import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 
 export async function feedbackGenerator(code:string, question:string, model:ChatOllama) {
     console.log("AI starting to analyse code...")
@@ -27,35 +27,12 @@ export async function feedbackGenerator(code:string, question:string, model:Chat
 
     try {
         console.log("Parsing response ...");
+        // Buat menghapus kata kata "think"
         const cleanedResponse = response.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
-        const jsonMatch = cleanedResponse.match(/```json\s*([\s\S]*?)\s*```/);
-        console.log(`cleanedResponse: ${cleanedResponse} \n Response match: ${jsonMatch}`);
 
-        let evaluationResult;
-
-        if (jsonMatch) {
-            try {
-                evaluationResult = JSON.parse(jsonMatch[1]);
-                console.log("JSON parsed from code block");
-            } catch (innerError) {
-                // If parsing the code block content fails, return it as text
-                console.log("Code block content isn't valid JSON, treating as text");
-                evaluationResult = cleanedResponse;
-            }
-        } else {
-            try {
-                evaluationResult = JSON.parse(cleanedResponse);
-                console.log("Full response parsed as JSON");
-            } catch (innerError) {
-                // If that fails too, just return the cleaned text
-                console.log("Response isn't JSON, treating as text");
-                evaluationResult = cleanedResponse;
-            }
-        }
-
-        console.log("evaluationResult:", evaluationResult);
+        console.log("evaluationResult:", cleanedResponse);
         console.log("Code successfully evaluated!");
-        return evaluationResult;
+        return cleanedResponse;
 
     } catch (error) {
         console.error("Error processing model response:", error);

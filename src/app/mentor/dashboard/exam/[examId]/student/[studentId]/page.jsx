@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import MentorDetailStudentQuiz from '@/components/Mentor/MentorDetailStudentQuiz';
 
+
 export default function MentorStudentExamDetail() {
     const { examId, studentId } = useParams()
     const [quizzes, setQuizzes] = useState([])

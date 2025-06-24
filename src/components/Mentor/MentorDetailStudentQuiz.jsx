@@ -1,5 +1,7 @@
 import Editor from "@monaco-editor/react"
 import { useState } from "react"
+import Markdown from 'react-markdown'
+
 
 export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit }) {
     const [feedback, setFeedback] = useState("")
@@ -17,7 +19,7 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit }) {
 
         setIsSubmitting(true)
         try {
-            const res = await fetch(`/api/quiz-submissions/${quiz.submission.quiz_submission_id}/feedback`, {
+            const res = await fetch(`/api/mentor-feedback/${quiz.submission.quiz_submission_id}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ feedback })
@@ -123,8 +125,8 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit }) {
                                 : quiz.submission.isCorrect ? 'bg-green' 
                                 : 'bg-red'
                             }`}>
-                                <h6 className="p-0 m-0">AI Feedbacks:</h6>
-                                <p>{quiz.submission.aiNote || <span className="text-muted">No Feedback Added Yet</span>}</p>
+                                <h6 className="p-0 mb-3">AI Feedbacks:</h6>
+                                <Markdown>{quiz.submission.aiNote || <span className="text-muted">No Feedback Added Yet</span>}</Markdown>
                                 
                                 <p className="m-0 p-0 text-body-secondary">Conclusion:</p>
                                 <h6 className={quiz.submission.isCorrect ? "text-success" : "text-danger"}>
@@ -132,29 +134,40 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit }) {
                                     <i className={`bi ${quiz.submission.isCorrect ? "bi-check2" : "bi-x"}`}></i>
                                 </h6>
                             </div>
+                            
 
-                            <div className="mt-5">
-                                <h6 className="p-0 m-0">Add Mentor Feedback:</h6>
-                                <form onSubmit={handleSubmitFeedback} className="row mt-2 justify-content-center align-items-center w-100">
-                                    <div className="col-11">
-                                        <textarea 
-                                            className="w-100 p-2 bg-transparent rounded-1 text-black"
-                                            placeholder="Add Feedback Here (Optional)"
-                                            value={feedback}
-                                            onChange={(e) => setFeedback(e.target.value)}
-                                        />
+                            {quiz.submission.feedback ? (
+                                <div className="bg-body-secondary mt-2 rounded-1 p-3">
+                                    <p className="fw-bold">Mentor Feedback:</p>
+                                    <div style={{ whiteSpace: 'pre-line' }}>{quiz.submission?.feedback}</div>
+                                </div>
+                            ):(
+                                <>
+                                    <div className="mt-5">
+                                        <h6 className="p-0 m-0">Add Mentor Feedback:</h6>
+                                        <form onSubmit={handleSubmitFeedback} className="row mt-2 justify-content-center align-items-center w-100">
+                                            <div className="col-11">
+                                                <textarea 
+                                                    className="w-100 p-2 bg-transparent rounded-1 text-black"
+                                                    placeholder="Add Feedback Here (Optional)"
+                                                    value={feedback}
+                                                    onChange={(e) => setFeedback(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="col-1 d-flex justify-content-center align-items-center">
+                                                <button 
+                                                    className="btn btn-dark px-3" 
+                                                    type="submit"
+                                                    disabled={isSubmitting || !feedback.trim()}
+                                                >
+                                                    {isSubmitting ? (<div className="loader"></div>) : 'Submit'}
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
-                                    <div className="col-1 d-flex justify-content-center align-items-center">
-                                        <button 
-                                            className="btn btn-dark px-3" 
-                                            type="submit"
-                                            disabled={isSubmitting || !feedback.trim()}
-                                        >
-                                            {isSubmitting ? '...' : 'Submit'}
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+                                </>
+                            )}
+                           
                         </>
                     ) : (
                         <div className="text-muted bg-body-secondary p-3 text-center rounded-1 m-0">

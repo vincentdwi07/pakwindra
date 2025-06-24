@@ -13,6 +13,7 @@ export async function POST(request) {
     
     try {
         // Authentication checks
+
         const session = await getServerSession(authOptions)
         if (!session?.user) {
             console.log('No session found')
@@ -100,7 +101,7 @@ export async function POST(request) {
                     console.log('PDF content preview:', questionText)
                 } else {
                     console.log('No file path found for quiz:', quizId)
-                    // Fallback to instruction text if no PDF file
+                    // Fallback to instruction text if no PDF file 
                     questionText = quizData.instruction || ''
                 }
             } catch (pdfError) {
@@ -146,9 +147,11 @@ export async function POST(request) {
                         aiNote: 'AI evaluation in progress...',
                         feedback: null,
                         score: null,
-                        updatedAt: new Date()
+                        updatedAt: new Date(),
+                        submission_count: (existingSubmission.submission_count || 1) + 1
                     }
                 });
+                console.log('Updated submission ID:', submission.quiz_submission_id);
             } else {
                 submission = await db.quizSubmission.create({
                     data: {
@@ -159,9 +162,11 @@ export async function POST(request) {
                         isCorrect: false,
                         aiNote: 'AI evaluation in progress...',
                         feedback: null,
-                        score: null
+                        score: null,
+                        submission_count: 1
                     }
                 });
+                console.log('Created submission ID:', submission.quiz_submission_id);
             }
 
             // Return immediate response
@@ -191,6 +196,44 @@ export async function POST(request) {
                             updatedAt: new Date()
                         }
                     })
+
+                    const examInfo = await db.exam.findUnique({
+                        where: { exam_id: examId },
+                        select: {
+                            endDate: true,
+                            quizzes: { select: { quiz_id: true } }
+                        }
+                    });
+                    const examQuizIds = examInfo.quizzes.map(q => q.quiz_id);
+
+                    const allQuizSubmissions = await db.quizSubmission.findMany({
+                        where: {
+                            quizId: { in: examQuizIds },
+                            studentId: user.user_id
+                        }
+                    });
+                    const allGraded = allQuizSubmissions.length === examQuizIds.length &&
+                        allQuizSubmissions.every(q => q.status === "GRADED");
+                    const now = new Date();
+                    const isDue = now >= new Date(examInfo.endDate);
+
+                    if ((allGraded || isDue) && allQuizSubmissions.length > 0) {
+                        // Hitung score
+                        const correctCount = allQuizSubmissions.filter(q => q.isCorrect).length;
+                        const score = (correctCount / examQuizIds.length) * 100;
+
+                        // Update examSubmission
+                        await db.examSubmission.updateMany({
+                            where: {
+                                examId: examId,
+                                studentId: user.user_id
+                            },
+                            data: {
+                                status: allGraded ? "GRADED" : undefined,
+                                score: score
+                            }
+                        });
+                    }
 
                     revalidateTag(`exam-${examId}`)
                     revalidateTag('exam-submission')
@@ -288,7 +331,8 @@ export async function GET(request) {
                 score: submission?.score || null,
                 submission_id: submission?.quiz_submission_id || null,
                 createdAt: submission?.createdAt || null,
-                updatedAt: submission?.updatedAt || null
+                updatedAt: submission?.updatedAt || null,
+                submission_count: submission?.submission_count || 0 // <-- tambahkan ini
             }
         })
 

@@ -8,9 +8,10 @@ export default function ExamContent({
                                         score,
                                         courseName,
                                         creatorName,
-                                        startDate,
+                                        // startDate,
                                         endDate,
-                                        quizzes
+                                        quizzes,
+                                        timing
                                     }) {
     const formatDate = (date) => {
         return new Date(date).toLocaleString('en-US', {
@@ -25,20 +26,6 @@ export default function ExamContent({
 
     const quizCount = quizzes.length || 0
 
-    const now = new Date() // Using the provided current time
-    const hasStarted = now >= new Date(startDate)
-    const hasEnded = now >= new Date(endDate)
-
-    const getExamStatus = () => {
-        if (!hasStarted) {
-            return 'upcoming'
-        }
-        if (hasEnded) {
-            return 'ended'
-        }
-        return 'active'
-    }
-
     const examStatus = status
 
     const Open = () => (
@@ -50,39 +37,22 @@ export default function ExamContent({
         </Link>
     )
 
-    const Grading = () => (
-        <Link
-            href={`/exam/${id}`}
-            className='text-secondary'>
-            Submitted (in-grading) <i className="bi bi-check-lg"></i>
-        </Link>
-    )
-
     const Graded = () => (
         <Link
-            href={`/exam/${exam_id}/result`}
-            className='btn btn-outline-dark'
+            href={`/exam/${id}`}
+            className='btn btn-outline-dark bg-dark text-white'
         >
             Detail <i className="bi bi-arrow-right-short"></i>
         </Link>
     )
 
-    const Upcoming = () => (
-        <div className='text-secondary'>
-            Opens {formatDate(startDate)}
-        </div>
-    )
-
     const ButtonStatus = () => {
-        if (examStatus === 'upcoming') {
-            return <Upcoming />
+        if (timing.status === 'ended'){
+            return <Graded/>
         }
-
         switch(status) {
             case 'OPEN':
                 return <Open />
-            case 'GRADING':
-                return <Grading />
             case 'GRADED':
                 return <Graded />
             default:
@@ -95,7 +65,8 @@ export default function ExamContent({
             <div className="exam-content">
                 <div className="d-flex justify-content-between exam-content-head column-gap-3 flex-wrap">
                         <p>{courseName} | {creatorName}</p>
-                    <p><span><i className="bi bi-calendar2-week-fill me-2"></i></span>
+                    <p className={timing?.status === 'ended' ? `text-danger` : ''}>
+                        <span><i className="bi bi-calendar2-week-fill me-2"></i></span>
                         Due {formatDate(endDate)}
                     </p>
                 </div>
@@ -112,12 +83,17 @@ export default function ExamContent({
                                 {quizCount} {quizCount === 1 ? 'Quiz' : 'Quizzes'}
                             </p>
                         </div>
-                        {status === "GRADED" && score !== null ? (
-                            ""// <div className={`user-exam-score text-light ${score < min_score ? 'bg-danger' : 'bg-success'}`}><span><i className="bi bi-file-earmark-check-fill me-2"></i></span>{score.toFixed(1)}</div>
-                        ):(
-                            ''
-                        )
-                        }
+                        {timing?.status === 'ended' ? (
+                            <div className={`user-exam-score text-light bg-danger`}>
+                                <p className='mb-0'>Past Due Date</p>
+                            </div>
+                        ): ''}
+                        {status === "GRADED" && score !== null && (
+                            <div className={`user-exam-score text-light ${score < 60 ? 'bg-danger' : 'bg-success'}`}>
+                                <span><i className="bi bi-file-earmark-check-fill me-2"></i></span>
+                                {score.toFixed(1)}
+                            </div>
+                        )}
                     </div>
                     <ButtonStatus statusparam={examStatus}/>
                 </div>

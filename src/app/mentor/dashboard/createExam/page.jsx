@@ -261,7 +261,7 @@ export default function CreateExamPage() {
                                             value={date}
                                             options={{ 
                                                 dateFormat: "Y-m-d H:i", 
-                                                minDate: "today",
+                                                // minDate: "today",
                                                 enableTime: true,
                                                 time_24hr: true,
                                                 defaultHour: 23,

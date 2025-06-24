@@ -44,7 +44,7 @@ export const getExams = cache(async (userId, userRole) => {
             }
         },
         orderBy: {
-            startDate: 'asc'
+            createdAt: 'desc'
         }
     }
 
@@ -57,7 +57,15 @@ export const getExams = cache(async (userId, userRole) => {
         })
     }
 
-    return db.exam.findMany(baseQuery) 
+    const exams = await db.exam.findMany(baseQuery)
+    
+    return exams.map(exam => {
+        const studentExamSubmission = exam.examSubmissions?.find(sub => sub.studentId === userId) || null;
+        return {
+            ...exam,
+            timing: getExamTiming(exam, now, studentExamSubmission)
+        }
+    })
 })
 
 export const processExamForDisplay = (
@@ -180,6 +188,7 @@ export const getExamById = cache(async (examId, userId, userRole) => {
     }
 
     // Process exam data
+    const studentExamSubmission = exam.examSubmissions.find(sub => sub.studentId === userId) || null;
     const processedExam = {
         ...exam,
         students: exam.examSubmissions.map(submission => submission.student),
@@ -188,8 +197,8 @@ export const getExamById = cache(async (examId, userId, userRole) => {
             submissions: quiz.submissions || []
         })),
         examSubmission: exam.examSubmissions.find(sub => sub.studentId === userId) || null,
-        progress: calculateExamProgress(exam, userId),
-        timing: getExamTiming(exam, now)
+        // progress: calculateExamProgress(exam, userId),
+        timing: getExamTiming(exam, now, studentExamSubmission)
     }
 
     return processedExam
@@ -199,44 +208,54 @@ export const getExamById = cache(async (examId, userId, userRole) => {
 
 
 // Helper function to calculate exam progress
-const calculateExamProgress = (exam, userId) => {
-    const totalQuizzes = exam.quizzes.length
-    const submittedQuizzes = exam.quizzes.filter(quiz =>
-        quiz.submissions.some(sub => sub.studentId === userId)
-    ).length
+// const calculateExamProgress = (exam, userId) => {
+//     const totalQuizzes = exam.quizzes.length
+//     const submittedQuizzes = exam.quizzes.filter(quiz =>
+//         quiz.submissions.some(sub => sub.studentId === userId)
+//     ).length
 
-    const submissions = exam.quizzes.flatMap(quiz =>
-        quiz.submissions.filter(sub => sub.studentId === userId)
-    )
+//     const submissions = exam.quizzes.flatMap(quiz =>
+//         quiz.submissions.filter(sub => sub.studentId === userId)
+//     )
 
-    const gradedSubmissions = submissions.filter(sub => sub.score !== null)
+//     const gradedSubmissions = submissions.filter(sub => sub.score !== null)
 
-    const averageScore = gradedSubmissions.length > 0
-        ? gradedSubmissions.reduce((acc, sub) => acc + (sub.score || 0), 0) / gradedSubmissions.length
-        : null
+//     const averageScore = gradedSubmissions.length > 0
+//         ? gradedSubmissions.reduce((acc, sub) => acc + (sub.score || 0), 0) / gradedSubmissions.length
+//         : null
 
-    return {
-        totalQuizzes,
-        submittedQuizzes,
-        completionRate: (submittedQuizzes / totalQuizzes) * 100,
-        averageScore,
-        isPassing: averageScore !== null ? averageScore >= exam.minScore : null,
-        gradedCount: gradedSubmissions.length
-    }
-}
+//     return {
+//         totalQuizzes,
+//         submittedQuizzes,
+//         completionRate: (submittedQuizzes / totalQuizzes) * 100,
+//         averageScore,
+//         isPassing: averageScore !== null ? averageScore >= exam.minScore : null,
+//         gradedCount: gradedSubmissions.length
+//     }
+// }
 
 // Helper function to determine exam timing status
-const getExamTiming = (exam, currentTime) => {
+const getExamTiming = (exam, currentTime, examSubmission) => {
     const startDate = new Date(exam.startDate)
     const endDate = new Date(exam.endDate)
 
     const hasStarted = currentTime >= startDate
     const hasEnded = currentTime >= endDate
 
+    let status = !hasStarted ? 'upcoming' : hasEnded ? 'ended' : 'active'
+
+    if (
+        hasEnded &&
+        examSubmission &&
+        (examSubmission.status === 'OPEN' || examSubmission.status === 'GRADING')
+    ) {
+        status = 'ended'
+    }
+
     return {
         hasStarted,
         hasEnded,
-        status: !hasStarted ? 'upcoming' : hasEnded ? 'ended' : 'active',
+        status,
         timeRemaining: hasEnded ? 0 : endDate.getTime() - currentTime.getTime(),
         startDate,
         endDate
