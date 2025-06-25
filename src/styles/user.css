@@ -724,3 +724,8 @@ input.password-input-user:-webkit-autofill {
   border: none;
   background-color: white;
 }
+
+
+.fw-bold{
+  font-weight: bold !important;
+}
