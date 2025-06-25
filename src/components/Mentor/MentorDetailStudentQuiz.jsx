@@ -68,13 +68,14 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit }) {
         )
     }
 
-    const statusGraded = () => {
-        return (
-            <div className="mentor-pill-badge bg-green text-center col-1">
-                GRADED                                      
-            </div>
-        )
-    }
+        const statusGraded = () => {
+            if (!quiz.submission) return null;
+            return (
+                <div className={`${quiz.submission.isCorrect  ? `bg-green` : 'bg-red'} mentor-pill-badge text-center col-1`}>
+                    GRADED                                      
+                </div>
+            );
+        }
 
     return (
         <div>
@@ -121,16 +122,14 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit }) {
                     {quiz.submission ? (
                         <>
                             <div className={`exam-content rounded-1 mt-0 ${
-                                quiz.submission.isCorrect === null ? 'bg-transparent' 
-                                : quiz.submission.isCorrect ? 'bg-green' 
-                                : 'bg-red'
+                                quiz.submission.isCorrect === null || quiz.submission.isCorrect != true ? 'bg-red' : 'bg-green' 
                             }`}>
                                 <h6 className="p-0 mb-3">AI Feedbacks:</h6>
                                 <Markdown>{quiz.submission.aiNote || <span className="text-muted">No Feedback Added Yet</span>}</Markdown>
                                 
                                 <p className="m-0 p-0 text-body-secondary">Conclusion:</p>
-                                <h6 className={quiz.submission.isCorrect ? "text-success" : "text-danger"}>
-                                    {quiz.submission.isCorrect ? "Correct" : "Incorrect"}
+                                <h6 className={quiz.submission.isCorrect != true ?  "text-danger" : "text-success"}>
+                                    {quiz.submission.isCorrect != true ? "Incorrect" : "Correct"}
                                     <i className={`bi ${quiz.submission.isCorrect ? "bi-check2" : "bi-x"}`}></i>
                                 </h6>
                             </div>

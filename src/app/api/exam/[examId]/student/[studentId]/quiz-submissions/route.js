@@ -91,6 +91,7 @@ export async function GET(request, { params }) {
                     feedback: submission.feedback,
                     aiNote: submission.aiNote,
                     score: submission.score,
+                    isCorrect: submission.isCorrect,
                     createdAt: submission.createdAt,
                     updatedAt: submission.updatedAt
                 } : null

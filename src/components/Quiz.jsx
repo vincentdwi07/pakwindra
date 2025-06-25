@@ -280,12 +280,17 @@ export default function Quiz({ exam, userId }) {
                             }}
                         />
 
+                        {quiz.quizSubmissionLimit === "Unlimited" ? (
+                            <p className="text-muted mb-2 mt-2">
+                                Submission attempt left: Unlimited
+                            </p>          
+                        ): ('')}
+
                         {quiz.submissionStatus === "GRADED" && quiz.educator_is_correct ? null : (
                             quiz.quizSubmissionLimit === "Unlimited" ? (
-                                // Unlimited: bisa submit kapan saja, kecuali sedang GRADING
                                 quiz.submissionStatus === "GRADING" ? (
                                     <p className="text-muted bg-body-secondary p-3 text-center rounded-1 m-0">
-                                        Your answer is being reviewed by AI. This process usually takes 2-5 mins. Do not close or refresh the browser or tab!
+                                        Your answer is being reviewed by AI. This process usually takes 2-5 mins. Do not close or refresh the browser!
                                     </p>
                                 ) : (
                                     <button
