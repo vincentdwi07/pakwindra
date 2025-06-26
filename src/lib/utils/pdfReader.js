@@ -114,6 +114,35 @@ export async function extractPDFText(filePath) {
     }
 }
 
+
+export async function extractPDFTextFromUrl(url) {
+    try {
+        const response = await fetch(url)
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch PDF from URL: ${response.statusText}`)
+        }
+
+        const arrayBuffer = await response.arrayBuffer()
+        const buffer = Buffer.from(arrayBuffer)
+
+        const data = await pdfParse(buffer)
+        let extractedText = data.text
+
+        extractedText = fixMathematicalSymbols(extractedText)
+
+        if (!extractedText || extractedText.trim().length === 0) {
+            throw new Error('No text content extracted from PDF')
+        }
+
+        return extractedText
+
+    } catch (error) {
+        console.error('PDF extraction from URL failed:', error)
+        throw new Error(`Failed to extract from URL: ${error.message}`)
+    }
+}
+
 /**
  * Fix common mathematical symbol conversion issues
  * @param {string} text - Raw extracted text
@@ -292,3 +321,4 @@ export async function getPDFInfo(filePath) {
         throw error
     }
 }
+

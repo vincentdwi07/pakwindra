@@ -8,6 +8,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import pdfParse from 'pdf-parse'
 import {extractPDFText} from "@/lib/utils/pdfReader";
+import {extractPDFTextFromUrl} from "@/lib/utils/pdfReader";
 
 export async function POST(request) {
     
@@ -96,7 +97,7 @@ export async function POST(request) {
             try {
                 if (quizData.filePath) {
                     console.log('Extracting PDF content for quiz:', quizId)
-                    questionText = await extractPDFText(quizData.filePath)
+                    questionText = await extractPDFTextFromUrl(quizData.fileUrl)
                     console.log('PDF extraction successful. Text length:', questionText.length)
                     console.log('PDF content preview:', questionText)
                 } else {

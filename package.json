@@ -23,6 +23,7 @@
     "@popperjs/core": "^2.11.8",
     "@prisma/client": "^6.3.0",
     "@radix-ui/react-popover": "^1.1.14",
+    "@supabase/supabase-js": "^2.50.1",
     "@syncfusion/ej2-react-calendars": "^29.2.5",
     "bcryptjs": "^2.4.3",
     "boostrap": "^2.0.0",

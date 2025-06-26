@@ -126,12 +126,12 @@ export default function CreateExamPage() {
                     return {
                         ...quiz,
                         filePath: uploadResult.filePath,
+                        fileUrl: uploadResult.fileUrl,
                         filename: quiz.file.name
                     };
                 })
             );
 
-            // console.log('All files uploaded:', quizFiles);
 
             const payload = {
                 title: String(formData.title),
@@ -141,13 +141,13 @@ export default function CreateExamPage() {
                 minScore: Number(formData.minScore),
                 quizzes: quizFiles.map((quiz) => ({
                     filePath: String(quiz.filePath),
+                    fileUrl: String(quiz.fileUrl),
                     submissionLimit: quiz.submissionLimit ? Number(quiz.submissionLimit) : null,
                     filename: String(quiz.filename),
                     instruction: ""
                 }))
             };
 
-            // console.log('Sending payload:', JSON.stringify(payload, null, 2));
 
             // Make request with explicit headers
             const examResponse = await fetch('/api/exams/create', {
@@ -159,8 +159,6 @@ export default function CreateExamPage() {
                 body: JSON.stringify(payload)
             });
 
-            // console.log('Exam Response Status:', examResponse.status);
-            // console.log('Response Headers:', Object.fromEntries(examResponse.headers.entries()));
             
             const responseText = await examResponse.text();
             console.log('Raw Response:', responseText);
@@ -182,7 +180,6 @@ export default function CreateExamPage() {
                 setError('');
                 setSuccess('Exam created successfully!');
                 
-                // Optional: redirect after a short delay to show success message
                 setTimeout(() => {
                     router.push('/mentor/dashboard');
                 }, 1500);
@@ -261,7 +258,7 @@ export default function CreateExamPage() {
                                             value={date}
                                             options={{ 
                                                 dateFormat: "Y-m-d H:i", 
-                                                // minDate: "today",
+                                                minDate: "today",
                                                 enableTime: true,
                                                 time_24hr: true,
                                                 defaultHour: 23,

@@ -40,6 +40,7 @@ export default function Quiz({ exam, userId }) {
                 ai_note: submission?.aiNote || null,
                 educator_is_correct: submission?.isCorrect || false,
                 filePath: quiz.filePath || null,
+                fileUrl: quiz.fileUrl || null,
                 // PERBAIKAN: Ambil submission_count dari database, bukan hardcode 0
                 submissionCount: submission?.submission_count || 0,
                 submissionUpdatedAt: submission?.updatedAt 
@@ -251,7 +252,7 @@ export default function Quiz({ exam, userId }) {
                     <div key={quizId} className={`instruction ${activeTab === quizId ? 'show' : ''}`}>
                         <p className="fw-bold mb-1">Read instruction below: </p>
                         <iframe
-                            src={`${quiz.filePath}#toolbar=0&navpanes=0&scrollbar=0`}
+                            src={`${quiz.fileUrl}#toolbar=0&navpanes=0&scrollbar=0`}
                             className="pdf-frame"
                         ></iframe>
                         

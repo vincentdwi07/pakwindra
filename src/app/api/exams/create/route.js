@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
+import { supabase } from '@/lib/supabase'
 
 export async function POST(req) {
     console.log('=== API Route Started ===');
@@ -100,7 +101,7 @@ export async function POST(req) {
                         startDate: startDate,
                         endDate: endDate,
                         creatorId: parseInt(session.user.id),
-                        minScore: parseFloat(body.minScore || 80),  
+                        minScore: parseFloat(body.minScore || 75),  
                     }
                 });
 
@@ -113,6 +114,7 @@ export async function POST(req) {
                         console.log(`Creating quiz ${index + 1}:`, {
                             filePath: quiz.filePath,
                             filename: quiz.filename,
+                            fileUrl: quiz.fileUrl,
                             submissionLimit: quiz.submissionLimit
                         });
                         
@@ -121,6 +123,7 @@ export async function POST(req) {
                                 examId: exam.exam_id,
                                 filePath: quiz.filePath || null,
                                 filename: quiz.filename || null,
+                                fileUrl: quiz.fileUrl || null,
                                 submission_limit: quiz.submissionLimit || null,
                                 instruction: quiz.instruction || '',
                             }
