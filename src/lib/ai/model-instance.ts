@@ -110,16 +110,25 @@ export function getChatModel(
 
         case 'deepseek':
             const deepseekConfig = config as DeepSeekConfig;
-            if (!process.env.DEEPSEEK_API_KEY) {
+            const deepseekApiKey = process.env.DEEPSEEK_API_KEY;
+
+            if (!deepseekApiKey) {
                 throw new Error("DEEPSEEK_API_KEY environment variable is not set for DeepSeek models.");
             }
+
             modelInstance = new ChatDeepSeek({
                 model: modelName,
-                temperature: deepseekConfig.temperature ?? 0.7,
+                temperature: deepseekConfig.temperature ?? 0.1,
                 maxRetries: deepseekConfig.maxRetries ?? 2,
-                // Add other DeepSeek-specific options from config
+                apiKey: deepseekApiKey, // ✅ Gunakan `apiKey` yang sesuai dengan LangChain
+                configuration: {
+                    baseURL: "https://api.deepseek.com",
+                },
+                streaming: true,
+                verbose: true
             });
             break;
+
 
         case 'openrouter':
             /*if (!process.env.DEEPSEEK_API_KEY) {
