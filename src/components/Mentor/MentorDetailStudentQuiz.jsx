@@ -102,7 +102,7 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit }) {
                         <p className="mb-0">Instruction</p>
                         {/* {quiz.instruction || "Tidak ada instruksi"} */}
                         <iframe
-                            src={`${quiz.filePath}#toolbar=0&navpanes=0&scrollbar=0`}
+                            src={`${quiz.fileUrl}#toolbar=0&navpanes=0&scrollbar=0`}
                             className="pdf-frame"
                         ></iframe>
                     </div>

@@ -44,7 +44,8 @@ export async function GET(request, { params }) {
                         quiz_id: true,
                         instruction: true,
                         filePath: true,
-                        submission_limit: true
+                        submission_limit: true,
+                        fileUrl: true,
                     }
                 }
             }
@@ -83,6 +84,7 @@ export async function GET(request, { params }) {
                 quiz_id: quiz.quiz_id,
                 instruction: quiz.instruction || '',
                 filePath: quiz.filePath,
+                fileUrl: quiz.fileUrl,
                 submission_limit: quiz.submission_limit,
                 submission: submission ? {
                     quiz_submission_id: submission.quiz_submission_id,
