@@ -22,6 +22,10 @@ input:-webkit-autofill:active {
   background-color:bisque;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold !important;
+}
+
 .user-login{
   height: 100vh;
   width: 100%;
