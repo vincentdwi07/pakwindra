@@ -93,26 +93,51 @@ export async function POST(request) {
 
             // Section PDF Read
             // Extract PDF text using the utility function
+            // Section PDF Read + Instruction Fallback
             let questionText = ''
+
             try {
-                if (quizData.filePath) {
-                    console.log('Extracting PDF content for quiz:', quizId)
-                    questionText = await extractPDFTextFromUrl(quizData.fileUrl)
-                    console.log('PDF extraction successful. Text length:', questionText.length)
-                    console.log('PDF content preview:', questionText)
-                } else {
-                    console.log('No file path found for quiz:', quizId)
-                    // Fallback to instruction text if no PDF file 
-                    questionText = quizData.instruction || ''
+                const hasPDF = quizData?.filePath && typeof quizData.fileUrl === 'string'
+                const hasInstruction = typeof quizData?.instruction === 'string' && quizData.instruction.trim().length > 0
+
+                let pdfText = ''
+                let instructionText = ''
+
+                // Coba ekstrak PDF
+                if (hasPDF) {
+                    try {
+                        console.log('Extracting PDF content for quiz:', quizId)
+                        pdfText = await extractPDFTextFromUrl(quizData.fileUrl)
+                        console.log('PDF extraction successful. Text length:', pdfText.length)
+                    } catch (pdfError) {
+                        console.error('PDF extraction failed:', pdfError)
+                    }
                 }
-            } catch (pdfError) {
-                console.error('PDF extraction failed:', pdfError)
-                // Return error response for PDF extraction failure
+
+                // Ambil instruction jika ada
+                if (hasInstruction) {
+                    instructionText = quizData.instruction.trim()
+                }
+
+                // Gabungkan keduanya jika ada
+                questionText = [pdfText?.trim(), instructionText].filter(Boolean).join('\n\nInstruction:\n')
+
+                // Jika tetap kosong, kirim error
+                if (!questionText || questionText.trim().length === 0) {
+                    return NextResponse.json({
+                        error: 'No quiz content found',
+                        details: 'Neither PDF content nor instruction was found'
+                    }, { status: 500 })
+                }
+
+            } catch (error) {
+                console.error('Failed to get quiz content:', error)
                 return NextResponse.json({
                     error: 'Failed to read quiz content',
-                    details: `Unable to extract content from PDF: ${pdfError.message}`
+                    details: error.message
                 }, { status: 500 })
             }
+
 
             // Validate that we have question content
             if (!questionText || questionText.trim().length === 0) {
@@ -184,7 +209,7 @@ export async function POST(request) {
             // Use Promise to handle background processing
             Promise.resolve().then(async () => {
                 try {
-                    const { aiResponse, isCorrect } = await evaluateCode(answer, questionText)
+                    const { aiResponse, isCorrect, score } = await evaluateCode(answer, questionText, quizData.rubrik, quizData.language)
                     
                     await db.quizSubmission.update({
                         where: { 
@@ -194,6 +219,7 @@ export async function POST(request) {
                             status: 'GRADED',
                             aiNote: aiResponse,
                             isCorrect: isCorrect,
+                            score: score,
                             updatedAt: new Date()
                         }
                     })
@@ -220,8 +246,9 @@ export async function POST(request) {
 
                     if ((allGraded || isDue) && allQuizSubmissions.length > 0) {
                         // Hitung score
-                        const correctCount = allQuizSubmissions.filter(q => q.isCorrect).length;
-                        const score = (correctCount / examQuizIds.length) * 100;
+                        const totalScore = allQuizSubmissions.reduce((sum, q) => sum + (q.score || 0), 0);
+                        const score = totalScore / examQuizIds.length;
+
 
                         // Update examSubmission
                         await db.examSubmission.updateMany({

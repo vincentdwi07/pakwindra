@@ -8,7 +8,6 @@ export default function ExamContent({
                                         score,
                                         courseName,
                                         creatorName,
-                                        // startDate,
                                         endDate,
                                         quizzes,
                                         timing
@@ -47,7 +46,7 @@ export default function ExamContent({
     )
 
     const ButtonStatus = () => {
-        if (timing.status === 'ended'){
+        if (timing?.status === 'ended'){
             return <Graded/>
         }
         switch(status) {

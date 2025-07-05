@@ -14,7 +14,7 @@ export default function CreateExamPage() {
         courseName: '',
         description: '',
         dueDate: null,
-        minScore: 75 // Add default minScore
+        minScore: 75 
     });
 
     // Date untuk dueDate
@@ -24,13 +24,23 @@ export default function CreateExamPage() {
     const [quizComponents, setQuizComponents] = useState([{ 
         id: 1,
         file: null,
-        submissionLimit: null
-    }]); 
+        submissionLimit: null,
+        instruction: '',
+        rubrik: '',
+        language: 'Python'
+    }]);
 
     // Fungsi untuk menambah komponen quiz
     const addQuizComponent = (e) => {
-        e.preventDefault(); // Prevent form submission
-        setQuizComponents([...quizComponents, { id: quizComponents.length + 1 }]);
+        e.preventDefault();
+        setQuizComponents([...quizComponents, {
+            id: quizComponents.length + 1,
+            file: null,
+            submissionLimit: null,
+            instruction: '',
+            rubrik: '',
+            language: 'Python'
+        }]);
     };
 
     const deleteQuizComponent = (e, idToDelete) => {
@@ -71,6 +81,29 @@ export default function CreateExamPage() {
         ));
     }
 
+    const handleInstruction = (e, id) => {
+        const value = e.target.value;
+        const instruction = value === '' ? null : value;
+        setQuizComponents(prev => prev.map(comp => 
+            comp.id === id ? {...comp, instruction: instruction} : comp
+        ));
+    }
+
+    const handleRubrik = (e, id) => {
+        const value = e.target.value;
+        const rubrik = value === '' ? null : value;
+        setQuizComponents(prev => prev.map(comp => 
+            comp.id === id ? {...comp, rubrik: rubrik} : comp
+        ));
+    }
+    
+    const handleLanguage = (e, id) => {
+        const value = e.target.value;
+        setQuizComponents(prev => prev.map(comp => 
+            comp.id === id ? {...comp, language: value} : comp
+        ));
+    }
+
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -89,11 +122,17 @@ export default function CreateExamPage() {
             return;
         }
 
-        const missingFiles = quizComponents.some(comp => !comp.file);
-        if (missingFiles) {
-            setError('Please upload PDF files for all quizzes');
+        const missingRubrikOrLang = quizComponents.some(q => !q.rubrik || !q.language);
+        if (missingRubrikOrLang) {
+            setError('Please fill in rubrik and language for all quizzes');
             return;
         }
+
+        // const missingFiles = quizComponents.some(comp => !comp.file);
+        // if (missingFiles) {
+        //     setError('Please upload PDF files for all quizzes');
+        //     return;
+        // }
 
         setIsSubmitting(true);
 
@@ -102,35 +141,38 @@ export default function CreateExamPage() {
 
             const quizFiles = await Promise.all(
                 quizComponents.map(async (quiz) => {
-                    if (!quiz.file) return null;
+                    let uploaded = {};
 
-                    const formData = new FormData();
-                    formData.append('file', quiz.file);
+                    if (quiz.file) {
+                        const formData = new FormData();
+                        formData.append('file', quiz.file);
 
-                    console.log('Uploading file for quiz:', quiz.id);
+                        const uploadRes = await fetch('/api/exams/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
 
-                    const uploadRes = await fetch('/api/exams/upload', {
-                        method: 'POST',
-                        body: formData
-                    });
+                        if (!uploadRes.ok) {
+                            const errorText = await uploadRes.text();
+                            console.error('Upload error response:', errorText);
+                            throw new Error(`File upload failed for quiz ${quiz.id}: ${errorText}`);
+                        }
 
-                    if (!uploadRes.ok) {
-                        const errorText = await uploadRes.text();
-                        console.error('Upload error response:', errorText);
-                        throw new Error(`File upload failed for quiz ${quiz.id}: ${errorText}`);
+                        const uploadResult = await uploadRes.json();
+                        uploaded = {
+                            filePath: uploadResult.filePath,
+                            fileUrl: uploadResult.fileUrl,
+                            filename: quiz.file.name
+                        };
                     }
-
-                    const uploadResult = await uploadRes.json();
-                    console.log('File uploaded successfully:', uploadResult.filePath);
 
                     return {
                         ...quiz,
-                        filePath: uploadResult.filePath,
-                        fileUrl: uploadResult.fileUrl,
-                        filename: quiz.file.name
+                        ...uploaded
                     };
                 })
             );
+
 
 
             const payload = {
@@ -140,11 +182,13 @@ export default function CreateExamPage() {
                 dueDate: date.toISOString(),
                 minScore: Number(formData.minScore),
                 quizzes: quizFiles.map((quiz) => ({
-                    filePath: String(quiz.filePath),
-                    fileUrl: String(quiz.fileUrl),
+                    filePath: String(quiz.filePath) || null,
+                    fileUrl: String(quiz.fileUrl) || null,
                     submissionLimit: quiz.submissionLimit ? Number(quiz.submissionLimit) : null,
-                    filename: String(quiz.filename),
-                    instruction: ""
+                    filename: String(quiz.filename) || "",
+                    instruction: quiz.instruction || "",
+                    rubrik: String(quiz.rubrik) || "",
+                    language: String(quiz.language) || ""
                 }))
             };
 
@@ -297,22 +341,60 @@ export default function CreateExamPage() {
                                 <p>Add Quiz</p>
                                 {quizComponents.map((component) => (
                                     <div key={component.id} className="mentor-add-quiz-component mb-3">
-                                        <div className="d-flex align-items-center justify-content-between">
-                                            <div className="d-flex gap-3 align-items-start">
+                                        <div className="d-flex gap-3 justify-content-between">
+                                            <div className="d-flex gap-3 flex-grow-1 align-items-start">
                                                 <p className="fw-normal mb-0 border rounded-1 bg-body-secondary p-2 px-3">{component.id}</p>
-                                                <div className="d-flex flex-column">
-                                                    <label htmlFor="" className="text-muted mb-2">Upload PDF instruction</label>
-                                                    <input 
-                                                        className="form-control mb-4" 
-                                                        type="file" 
-                                                        id={`formFile-${component.id}`} 
-                                                        required
-                                                        accept=".pdf"
-                                                        onChange={(e) => handleFileChange(e, component.id)}
-                                                    />
+                                                <div className="d-flex flex-column w-100">
+                                                    <div>
+                                                        <label htmlFor="" className="text-muted mb-2">Quiz Instruction (Leave this field blank for Instruction with PDF File)</label>
+                                                        <textarea
+                                                            id={`quizText-${component.id}`}
+                                                            className="form-control mb-3 mentor-add-exam-input"
+                                                            rows="4"
+                                                            placeholder="Enter quiz instructions..."
+                                                            value={component.instruction || ""}
+                                                            onChange={(e) => handleInstruction(e, component.id)}
+                                                        />
+
+                                                        <label htmlFor="" className="text-muted mb-2">Quiz Instruction PDF File (Leave this field blank for text instruction only)</label>
+                                                        <input 
+                                                            className="form-control mb-4 mentor-add-exam-input" 
+                                                            type="file" 
+                                                            id={`formFile-${component.id}`} 
+                                                            accept=".pdf"
+                                                            onChange={(e) => handleFileChange(e, component.id)}
+                                                        />
+
+                                                        <label htmlFor="" className="text-muted mb-2">Quiz Language</label>
+                                                        <select
+                                                            className="form-select mb-3 mentor-add-exam-input"
+                                                            value={component.language || ""}
+                                                            onChange={(e) => handleLanguage(e, component.id)}
+                                                            required
+                                                        >
+                                                            <option value="Python">Python</option>
+                                                            <option value="Java">Java</option>
+                                                            <option value="PHP">PHP</option>
+                                                            <option value="C">C</option>
+                                                            <option value="JavaScript">JavaScript</option>
+                                                        </select>
+
+
+                                                        <label htmlFor="" className="text-muted mb-2">Quiz Rubrik</label>
+                                                        <textarea
+                                                            id={`quizText-${component.id}`}
+                                                            className="form-control mb-3 mentor-add-exam-input"
+                                                            rows="4"
+                                                            placeholder="Enter quiz rubrik..."
+                                                            value={component.rubrik || ""}
+                                                            required
+                                                            onChange={(e) => handleRubrik(e, component.id)}
+                                                        />
+                                                    </div>
+
                                                     <label htmlFor="" className="text-muted mb-2">Set quiz submission limit (Leave this field blank for unlimited submission limit)</label>
                                                     <input 
-                                                        className="form-control" 
+                                                        className="form-control mentor-add-exam-input" 
                                                         type="number" 
                                                         id={`submissionLimit-${component.id}`} 
                                                         placeholder="Unlimited"
@@ -322,7 +404,7 @@ export default function CreateExamPage() {
                                                     />
                                                 </div>
                                             </div>
-                                            <div>                               
+                                            <div className="d-flex align-items-end justify-content-center">                            
                                                 {quizComponents.length > 1 ? (
                                                     <button 
                                                         onClick={(e) => deleteQuizComponent(e, component.id)}

@@ -37,7 +37,6 @@ export default async function Home() {
                   creatorName={exam.creator.name}
                   creator={exam.creator}
                   quizzes={exam.quizzes}
-                  // startDate={exam.startDate}
                   endDate={exam.endDate}
                   userRole={userRole}
                   studentId={studentId}

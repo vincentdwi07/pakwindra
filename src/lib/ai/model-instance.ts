@@ -120,7 +120,7 @@ export function getChatModel(
                 model: modelName,
                 temperature: deepseekConfig.temperature ?? 0.1,
                 maxRetries: deepseekConfig.maxRetries ?? 2,
-                apiKey: deepseekApiKey, // ✅ Gunakan `apiKey` yang sesuai dengan LangChain
+                apiKey: deepseekApiKey,
                 configuration: {
                     baseURL: "https://api.deepseek.com",
                 },
