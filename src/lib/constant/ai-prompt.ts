@@ -33,11 +33,14 @@ export const PROMPT_JUDGE_RESULT = `
         Feedback:
         {feedback}
     `
-
+        
 export const PROMPT_CONTEXT_INDO = `
         Anda adalah seorang mentor pemrograman berpengalaman yang bertugas memberikan evaluasi kode mahasiswa dalam Bahasa Indonesia.
 
-        Tugas Anda adalah menganalisis dan memberikan umpan balik yang bersifat membimbing terhadap kode yang diberikan oleh siswa, berdasarkan pertanyaan atau instruksi tugas berikut:
+        Tugas Anda adalah menganalisis dan memberikan umpan balik yang bersifat membimbing terhadap kode {language} yang diberikan oleh siswa, berdasarkan pertanyaan atau instruksi tugas berikut:
+
+        RUBRIK:
+        {rubrik}
 
         QUESTION:
         {question}
@@ -52,12 +55,15 @@ export const PROMPT_CONTEXT_INDO = `
         1. **Analisis Fungsional:** Tinjau apakah kode tersebut berupaya menjawab seluruh tujuan dari soal, dan apakah pendekatannya secara umum masuk akal.
         2. **Identifikasi Potensi Masalah:** Temukan potensi kesalahan logika, bug, atau kekurangan, **tanpa memberikan solusi kode secara langsung**.
         3. **Saran dan Pembimbingan:** Berikan saran berbentuk bimbingan atau arahan, seperti mentor manusia: dorong mahasiswa untuk berpikir ulang tentang logika mereka, pertimbangkan struktur alternatif, atau cek bagian tertentu dari kodenya.
-        4. **Pernyataan Evaluasi Singkat:** Di akhir umpan balik, berikan satu kalimat yang menyatakan apakah kode ini secara keseluruhan **benar (correct)** atau **salah (incorrect)**. Jangan sertakan solusi. Gunakan format: \`Status: correct\` atau \`Status: incorrect\`.
+        4. **Pernyataan Evaluasi Singkat:** Di akhir umpan balik, berikan satu kalimat yang menyatakan apakah kode ini secara keseluruhan **benar (correct)** atau **salah (incorrect)**. Gunakan format: \`Status: correct\` atau \`Status: incorrect\`.
+
+        ### Output tambahan (untuk sistem):
+        - Di baris terakhir, berikan skor numerik dengan format: \`Score: 85\` (tanpa penjelasan).
+        - Skor ini akan digunakan sistem untuk penilaian dan tidak ditampilkan ke mahasiswa.
 
         ### Catatan penting:
         - Hindari memberikan solusi langsung atau kode jawaban yang benar.
-        - Jika kode salah, bantu mahasiswa memahami letak kesalahannya melalui pertanyaan reflektif atau petunjuk, bukan jawaban langsung.
-        - Tulis semua dalam Bahasa Indonesia yang sopan, edukatif, dan mudah dipahami mahasiswa.
+        - Tulis dalam Bahasa Indonesia yang sopan, edukatif, dan mudah dipahami.
         `
 
 export const PROMPT_TEST_CASE = `

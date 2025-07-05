@@ -68,14 +68,14 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit }) {
         )
     }
 
-        const statusGraded = () => {
-            if (!quiz.submission) return null;
-            return (
-                <div className={`${quiz.submission.isCorrect  ? `bg-green` : 'bg-red'} mentor-pill-badge text-center col-1`}>
-                    GRADED                                      
-                </div>
-            );
-        }
+    const statusGraded = () => {
+        if (!quiz.submission) return null;
+        return (
+            <div className={`${quiz.submission.isCorrect  ? `bg-green` : 'bg-red'} mentor-pill-badge text-center col-1`}>
+                GRADED                                      
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -84,13 +84,14 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit }) {
                 {quizzes.map((_, index) => (
                     <button
                         key={index}
-                        className={`btn btn-md p-2 px-3  me-2 ${activeQuiz === index ? 'btn-dark' : 'btn-outline-dark'}`}
+                        className={`btn btn-md px-4 p-2 tab-links me-2 ${activeQuiz === index ? 'btn-dark' : 'btn-outline-dark'}`}
                         onClick={() => setActiveQuiz(index)}
                     >
                         {index + 1}
                     </button>
                 ))}
             </div>
+
 
             {/* Quiz Content */}
             <div className="mentor-detail-student-quiz mb-4">
@@ -99,16 +100,30 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit }) {
                 </div>
                 <div className="exam-content mt-0">
                     <div className="mb-3">
-                        <p className="mb-0">Instruction</p>
-                        {/* {quiz.instruction || "Tidak ada instruksi"} */}
-                        <iframe
-                            src={`${quiz.fileUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-                            className="pdf-frame"
-                        ></iframe>
+                        <p className="mb-0 fw-bold">Instruction</p>
+                        {(quiz.instruction || quiz.fileUrl) && (
+                            <div className="">
+                                {/* Teks Instruction jika ada */}
+                                {quiz.instruction && (
+                                    <Markdown>{quiz.instruction}</Markdown>
+                                )}
+
+                                {/* PDF jika ada */}
+                                {quiz.fileUrl && typeof quiz.fileUrl === 'string' && quiz.fileUrl != 'undefined' && (
+                                    <iframe
+                                        src={`${quiz.fileUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                                        className="pdf-frame"
+                                    />
+                                )}
+
+                            </div>
+                        )}
                     </div>
 
+
+
                     <div>
-                        <p className="mb-0">Answer:</p>
+                        <p className="mb-0 fw-bold">Answer:</p>
                         <Editor
                             height="400px"
                             language="python"
@@ -133,6 +148,13 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit }) {
                                     <i className={`bi ${quiz.submission.isCorrect ? "bi-check2" : "bi-x"}`}></i>
                                 </h6>
                             </div>
+
+                            
+                            {typeof quiz.submission.score === 'number' && (
+                                <h5 className={`fw-bold mt-2 w-100 p-2 justify-content-center d-flex rounded-1 ${quiz.submission.isCorrect ? "bg-green" : "bg-red"}`}>
+                                    Score: {quiz.submission.score}/100
+                                </h5>
+                            )}
                             
 
                             {quiz.submission.feedback ? (

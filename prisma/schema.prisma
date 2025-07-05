@@ -87,6 +87,8 @@
     filename    String?
     filePath    String?
     fileUrl    String?
+    rubrik    String?
+    language    String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

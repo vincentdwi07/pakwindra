@@ -33,7 +33,9 @@ export default function Quiz({ exam, userId }) {
             const submission = quiz.submissions?.[0]
             acc[quiz.quiz_id] = {
                 key: quiz.quiz_id,
-                instruction: quiz.instruction,
+                instruction: quiz.instruction || '',
+                language: quiz.language || '',
+                rubrik: quiz.rubrik || '',
                 quizSubmissionLimit: quiz.submission_limit || "Unlimited",
                 submissionStatus: submission?.status || 'OPEN',
                 educator_note: submission?.feedback || null,
@@ -41,6 +43,7 @@ export default function Quiz({ exam, userId }) {
                 educator_is_correct: submission?.isCorrect || false,
                 filePath: quiz.filePath || null,
                 fileUrl: quiz.fileUrl || null,
+                score: submission?.score || 0,
                 // PERBAIKAN: Ambil submission_count dari database, bukan hardcode 0
                 submissionCount: submission?.submission_count || 0,
                 submissionUpdatedAt: submission?.updatedAt 
@@ -66,7 +69,7 @@ export default function Quiz({ exam, userId }) {
                             ai_note: quiz.ai_note,
                             educator_is_correct: quiz.is_correct,
                             educator_note: quiz.educator_note,
-                            // PENTING: Update submissionCount dari database
+                            score: quiz.score,
                             submissionCount: quiz.submission_count || 0,
                             submissionUpdatedAt: quiz.updatedAt 
                                 ? new Date(quiz.updatedAt).toLocaleString()
@@ -127,6 +130,7 @@ export default function Quiz({ exam, userId }) {
                                         submissionStatus: quiz.status,
                                         ai_note: quiz.ai_note,
                                         educator_is_correct: quiz.is_correct,
+                                        score: quiz.score,
                                         educator_note: quiz.educator_note,
                                         submissionCount: quiz.submission_count || prev[quiz.quiz_id].submissionCount,
                                         submissionUpdatedAt: quiz.updatedAt 
@@ -251,35 +255,55 @@ export default function Quiz({ exam, userId }) {
             <div className="task-content position-relative">{Object.entries(quizzesData).map(([quizId, quiz]) => (
                     <div key={quizId} className={`instruction ${activeTab === quizId ? 'show' : ''}`}>
                         <p className="fw-bold mb-1">Read instruction below: </p>
-                        <iframe
-                            src={`${quiz.fileUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-                            className="pdf-frame"
-                        ></iframe>
+
+                        {/* Instruction Section */}
+                        {(quiz.instruction || quiz.fileUrl) && (
+                            <div className="">
+                                {/* Teks Instruction jika ada */}
+                                {quiz.instruction && (
+                                    <Markdown>{quiz.instruction}</Markdown>
+                                )}
+
+                                {/* PDF jika ada */}
+                                {quiz.fileUrl && typeof quiz.fileUrl === 'string' && quiz.fileUrl != 'undefined' && (
+                                    <iframe
+                                        src={`${quiz.fileUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                                        className="pdf-frame"
+                                    />
+                                )}
+
+                            </div>
+                        )}
+
                         
-                        <p className="fw-bold mb-2 mt-5">
+                        <p className="fw-bold mb-2 mt-3">
                             {(quiz.submissionStatus === "GRADING" || quiz.submissionStatus === "GRADED")
                                 ? "Your answer review:"
                                 : "Input your answer here:"}
                         </p>
+                        
+                        <div>
+                            <div className="p-2 fw-semibold bg-body-secondary"><i className="bi bi-code-slash me-2"></i>{quiz.language}</div>
+                            <Editor
+                                key={`editor-${quizId}`}
+                                height="400px"
+                                language="python"
+                                value={codes[quizId] || ''}
+                                onChange={(value) => handleCodeChange(value, activeTab)}
+                                theme="vs-dark"
+                                className="mb-3"
+                                options={{
+                                    readOnly: quizzesData[activeTab]?.submissionStatus === "GRADING" || 
+                                            (quizzesData[activeTab]?.submissionStatus === "GRADED" && 
+                                            quizzesData[activeTab]?.educator_is_correct),
+                                    minimap: { enabled: false },
+                                    lineNumbers: "on",
+                                    wordWrap: "on",
+                                    automaticLayout: true,
+                                }}
+                            />
+                        </div>
 
-                        <Editor
-                            key={`editor-${quizId}`}
-                            height="400px"
-                            language="python"
-                            value={codes[quizId] || ''}
-                            onChange={(value) => handleCodeChange(value, activeTab)}
-                            theme="vs-dark"
-                            className="mb-3"
-                            options={{
-                                readOnly: quizzesData[activeTab]?.submissionStatus === "GRADING" || 
-                                        (quizzesData[activeTab]?.submissionStatus === "GRADED" && 
-                                        quizzesData[activeTab]?.educator_is_correct),
-                                minimap: { enabled: false },
-                                lineNumbers: "on",
-                                wordWrap: "on",
-                                automaticLayout: true,
-                            }}
-                        />
 
                         {quiz.quizSubmissionLimit === "Unlimited" ? (
                             <p className="text-muted mb-2 mt-2">
@@ -333,21 +357,33 @@ export default function Quiz({ exam, userId }) {
                         
                         {/* Feedback Section */}
                         {quiz.submissionStatus === 'GRADED' && (
-                            <div className={`user-exam-feedback ${quiz.educator_is_correct ? 'correct' : 'false'}`}>
-                                <div>
-                                    <p className="text-body-secondary" style={{ fontSize: '1rem' }}>Feedbacks:</p>
-                                    <h6 className="p-0 m-0">AI Feedbacks:</h6>
-                                    <Markdown>{quiz.ai_note ?? 'No Feedback Added'}</Markdown>
-                                    <h6 className="p-0 m-0">Educator Feedbacks:</h6>
-                                    <p>{quiz.educator_note === null ? 'No Feedback Added' : quiz.educator_note}</p>
-                                    <p className="m-0 p-0 text-body-secondary">Conclusion:</p>
-                                    {quiz.educator_is_correct ? (
-                                        <h6 className="text-success m-0 p-0">Correct <i className="bi bi-check2"></i></h6>
-                                    ) : (
-                                        <h6 className="text-danger m-0 p-0">False <i className="bi bi-x-lg"></i></h6>
-                                    )}
+                            <>
+                                <div className={`user-exam-feedback ${quiz.educator_is_correct ? 'correct' : 'false'}`}>
+                                    <div>
+                                        <h6 className="p-0 m-0">AI Feedbacks:</h6>
+                                        <Markdown>{quiz.ai_note ?? 'No Feedback Added'}</Markdown>
+                                        {quiz?.educator_note && (
+                                            <>
+                                                <h6 className="p-0 m-0">Educator Feedbacks:</h6>
+                                                <p>quiz.educator_note</p>
+                                            </>
+                                        )}
+                                        <p className="m-0 p-0 text-body-secondary">Conclusion:</p>
+                                        {quiz.educator_is_correct ? (
+                                            <h5 className="text-success m-0 p-0">Correct <i className="bi bi-check2"></i></h5>
+                                        ) : (
+                                            <h5 className="text-danger m-0 p-0">False <i className="bi bi-x-lg"></i></h5>
+                                        )}
+                                        
+                                    </div>
                                 </div>
-                            </div>
+
+                                {typeof quiz.score === 'number' && (
+                                    <h5 className={`fw-bold mt-2 mb-0 w-100 d-flex justify-content-center rounded-1 p-3  ${quiz.educator_is_correct ? "bg-green" : "bg-red"}`}>
+                                        Score: {quiz.score} / 100
+                                    </h5>
+                                )}
+                            </>
                         )}
                     </div>
                 ))}

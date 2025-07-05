@@ -115,7 +115,9 @@ export async function POST(req) {
                             filePath: quiz.filePath,
                             filename: quiz.filename,
                             fileUrl: quiz.fileUrl,
-                            submissionLimit: quiz.submissionLimit
+                            submissionLimit: quiz.submissionLimit,
+                            language: quiz.language,
+                            rubrik: quiz.rubrik
                         });
                         
                         const createdQuiz = await tx.quiz.create({
@@ -126,6 +128,8 @@ export async function POST(req) {
                                 fileUrl: quiz.fileUrl || null,
                                 submission_limit: quiz.submissionLimit || null,
                                 instruction: quiz.instruction || '',
+                                language: quiz.language || '',
+                                rubrik: quiz.rubrik || ''
                             }
                         });
                         

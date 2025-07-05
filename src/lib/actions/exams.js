@@ -167,7 +167,7 @@ export const getExamById = cache(async (examId, userId, userRole) => {
                             answer: true,
                             status: true,
                             createdAt: true,
-                            updatedAt: true
+                            updatedAt: true,
                         },
                         orderBy: {
                             updatedAt: 'desc'
