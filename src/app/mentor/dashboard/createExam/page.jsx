@@ -344,7 +344,7 @@ export default function CreateExamPage() {
                                         <div className="d-flex gap-3 justify-content-between">
                                             <div className="d-flex gap-3 flex-grow-1 align-items-start">
                                                 <p className="fw-normal mb-0 border rounded-1 bg-body-secondary p-2 px-3">{component.id}</p>
-                                                <div className="d-flex flex-column w-100">
+                                                <div className="w-100 mentor-quiz-field-input">
                                                     <div>
                                                         <label htmlFor="" className="text-muted mb-2">Quiz Instruction (Leave this field blank for Instruction with PDF File)</label>
                                                         <textarea

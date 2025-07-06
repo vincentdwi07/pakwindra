@@ -733,3 +733,9 @@ input.password-input-user:-webkit-autofill {
 .fw-bold{
   font-weight: bold !important;
 }
+
+
+.mentor-quiz-field-input{
+  display: flex;
+  flex-direction: column;
+}
