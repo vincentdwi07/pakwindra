@@ -346,62 +346,73 @@ export default function CreateExamPage() {
                                                 <p className="fw-normal mb-0 border rounded-1 bg-body-secondary p-2 px-3">{component.id}</p>
                                                 <div className="w-100 mentor-quiz-field-input">
                                                     <div>
-                                                        <label htmlFor="" className="text-muted mb-2">Quiz Instruction (Leave this field blank for Instruction with PDF File)</label>
-                                                        <textarea
-                                                            id={`quizText-${component.id}`}
-                                                            className="form-control mb-3 mentor-add-exam-input"
-                                                            rows="4"
-                                                            placeholder="Enter quiz instructions..."
-                                                            value={component.instruction || ""}
-                                                            onChange={(e) => handleInstruction(e, component.id)}
-                                                        />
+                                                        <div className="d-flex flex-column">
+                                                            <label htmlFor="" className="text-muted mb-2">Quiz Instruction (Leave this field blank for Instruction with PDF File)</label>
+                                                            <textarea
+                                                                id={`quizText-${component.id}`}
+                                                                className="form-control mb-3 mentor-add-exam-input"
+                                                                rows="4"
+                                                                placeholder="Enter quiz instructions..."
+                                                                value={component.instruction || ""}
+                                                                onChange={(e) => handleInstruction(e, component.id)}
+                                                            />
+                                                        </div>
 
-                                                        <label htmlFor="" className="text-muted mb-2">Quiz Instruction PDF File (Leave this field blank for text instruction only)</label>
+                                                        <div className="d-flex flex-column">
+                                                            <label htmlFor="" className="text-muted mb-2">Quiz Instruction PDF File (Leave this field blank for text instruction only)</label>
+                                                            <input 
+                                                                className="form-control mb-4 mentor-add-exam-input" 
+                                                                type="file" 
+                                                                id={`formFile-${component.id}`} 
+                                                                accept=".pdf"
+                                                                onChange={(e) => handleFileChange(e, component.id)}
+                                                            />
+                                                        </div>
+
+                                                        <div className="d-flex flex-column">
+                                                            <label htmlFor="" className="text-muted mb-2">Quiz Language</label>
+                                                            <select
+                                                                className="form-select mb-3 mentor-add-exam-input"
+                                                                value={component.language || ""}
+                                                                onChange={(e) => handleLanguage(e, component.id)}
+                                                                required
+                                                            >
+                                                                <option value="Python">Python</option>
+                                                                <option value="Java">Java</option>
+                                                                <option value="PHP">PHP</option>
+                                                                <option value="C">C</option>
+                                                                <option value="JavaScript">JavaScript</option>
+                                                            </select>
+                                                        </div>
+
+
+                                                        <div className="d-flex flex-column">
+                                                            <label htmlFor="" className="text-muted mb-2">Quiz Rubrik</label>
+                                                            <textarea
+                                                                id={`quizText-${component.id}`}
+                                                                className="form-control mb-3 mentor-add-exam-input"
+                                                                rows="4"
+                                                                placeholder="Enter quiz rubrik..."
+                                                                value={component.rubrik || ""}
+                                                                required
+                                                                onChange={(e) => handleRubrik(e, component.id)}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div >
+                                                        <label htmlFor="" className="text-muted mb-2">Set quiz submission limit (Leave this field blank for unlimited submission limit)</label>
                                                         <input 
-                                                            className="form-control mb-4 mentor-add-exam-input" 
-                                                            type="file" 
-                                                            id={`formFile-${component.id}`} 
-                                                            accept=".pdf"
-                                                            onChange={(e) => handleFileChange(e, component.id)}
-                                                        />
-
-                                                        <label htmlFor="" className="text-muted mb-2">Quiz Language</label>
-                                                        <select
-                                                            className="form-select mb-3 mentor-add-exam-input"
-                                                            value={component.language || ""}
-                                                            onChange={(e) => handleLanguage(e, component.id)}
-                                                            required
-                                                        >
-                                                            <option value="Python">Python</option>
-                                                            <option value="Java">Java</option>
-                                                            <option value="PHP">PHP</option>
-                                                            <option value="C">C</option>
-                                                            <option value="JavaScript">JavaScript</option>
-                                                        </select>
-
-
-                                                        <label htmlFor="" className="text-muted mb-2">Quiz Rubrik</label>
-                                                        <textarea
-                                                            id={`quizText-${component.id}`}
-                                                            className="form-control mb-3 mentor-add-exam-input"
-                                                            rows="4"
-                                                            placeholder="Enter quiz rubrik..."
-                                                            value={component.rubrik || ""}
-                                                            required
-                                                            onChange={(e) => handleRubrik(e, component.id)}
+                                                            className="form-control mentor-add-exam-input" 
+                                                            type="number" 
+                                                            id={`submissionLimit-${component.id}`} 
+                                                            placeholder="Unlimited"
+                                                            min={1}
+                                                            value={component.submissionLimit || ''}
+                                                            onChange={(e) => handleSubmissionLimit(e, component.id)}
                                                         />
                                                     </div>
 
-                                                    <label htmlFor="" className="text-muted mb-2">Set quiz submission limit (Leave this field blank for unlimited submission limit)</label>
-                                                    <input 
-                                                        className="form-control mentor-add-exam-input" 
-                                                        type="number" 
-                                                        id={`submissionLimit-${component.id}`} 
-                                                        placeholder="Unlimited"
-                                                        min={1}
-                                                        value={component.submissionLimit || ''}
-                                                        onChange={(e) => handleSubmissionLimit(e, component.id)}
-                                                    />
                                                 </div>
                                             </div>
                                             <div className="d-flex align-items-end justify-content-center">                            
