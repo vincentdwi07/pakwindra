@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import Link from "next/link"
+import { getExamTiming } from '@/lib/actions/exams'
 
-export default function     MentorStudentList({ exam, examId, students, examSubmissions, timing }) {
+export default function MentorStudentList({ exam, examId, students, examSubmissions, timing }) {
     const [searchTerm, setSearchTerm] = useState('')
 
     const filteredStudents = students?.filter(student => 
@@ -73,6 +74,7 @@ export default function     MentorStudentList({ exam, examId, students, examSubm
             ) : (
                 filteredStudents.map(student => {
                     const submission = examSubmissions?.find(sub => sub.studentId === student.user_id)
+                    const timing = getExamTiming(exam, new Date(), submission)
                 
                     return (
                         <div key={student.user_id} className="exam-content p-0 mt-1 mb-2">
@@ -110,9 +112,10 @@ export default function     MentorStudentList({ exam, examId, students, examSubm
                                         </>
                                         )}
                                         <div>
-                                            {timing?.status === 'ended' ? (
+                                            {timing.status === 'ended' ? (
                                                 <p className='mentor-pill-badge bg-red text-danger mb-0'>Past Due Date</p>
                                             ) : ''}
+
                                         </div>
                                     </div>
                                 <div>

@@ -207,35 +207,8 @@ export const getExamById = cache(async (examId, userId, userRole) => {
 })
 
 
-// Helper function to calculate exam progress
-// const calculateExamProgress = (exam, userId) => {
-//     const totalQuizzes = exam.quizzes.length
-//     const submittedQuizzes = exam.quizzes.filter(quiz =>
-//         quiz.submissions.some(sub => sub.studentId === userId)
-//     ).length
-
-//     const submissions = exam.quizzes.flatMap(quiz =>
-//         quiz.submissions.filter(sub => sub.studentId === userId)
-//     )
-
-//     const gradedSubmissions = submissions.filter(sub => sub.score !== null)
-
-//     const averageScore = gradedSubmissions.length > 0
-//         ? gradedSubmissions.reduce((acc, sub) => acc + (sub.score || 0), 0) / gradedSubmissions.length
-//         : null
-
-//     return {
-//         totalQuizzes,
-//         submittedQuizzes,
-//         completionRate: (submittedQuizzes / totalQuizzes) * 100,
-//         averageScore,
-//         isPassing: averageScore !== null ? averageScore >= exam.minScore : null,
-//         gradedCount: gradedSubmissions.length
-//     }
-// }
-
 // Helper function to determine exam timing status
-const getExamTiming = (exam, currentTime, examSubmission) => {
+export const getExamTiming = (exam, currentTime, examSubmission) => {
     const startDate = new Date(exam.startDate)
     const endDate = new Date(exam.endDate)
 
@@ -251,6 +224,14 @@ const getExamTiming = (exam, currentTime, examSubmission) => {
     ) {
         status = 'ended'
     }
+
+    if (
+        examSubmission &&
+        examSubmission.status === 'GRADED'
+    ) {
+        status = 'graded'
+    }
+
 
     return {
         hasStarted,

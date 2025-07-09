@@ -400,7 +400,7 @@ export default function CreateExamPage() {
                                                         </div>
                                                     </div>
 
-                                                    <div >
+                                                    <div className="d-flex flex-column">
                                                         <label htmlFor="" className="text-muted mb-2">Set quiz submission limit (Leave this field blank for unlimited submission limit)</label>
                                                         <input 
                                                             className="form-control mentor-add-exam-input" 
