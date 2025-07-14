@@ -33,6 +33,7 @@
     "flatpickr": "^4.6.13",
     "js-tiktoken": "^1.0.20",
     "langchain": "^0.3.27",
+    "newrelic": "^12.25.0",
     "next": "^15.3.4",
     "next-auth": "^4.24.7",
     "pdf-lib": "^1.17.1",
