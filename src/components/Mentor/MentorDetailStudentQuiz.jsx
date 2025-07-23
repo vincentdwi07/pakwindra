@@ -133,28 +133,28 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit, exa
                                 Score: {Number(quiz.submission.score)} / 100
                             </h5>
 
-
+                            <p className="mt-5 fw-bold mb-0 p-0">Token Usage Information for This Quiz Submission:</p>
                             <div className="d-flex justify-content-between gap-2 mt-2">
                                 <div className="token-content border-secondary-subtle border rounded-1 w-100">
                                     <div className="border-secondary-subtle border-bottom p-2 fw-bold">
-                                        Input Token
+                                        Total Input Token
                                     </div>
                                     <div className="p-2 d-flex flex-column">
                                         <span>
-                                            Token Usage: {quiz.submission.token?.promptTokens ?? '-'}
+                                            Total Token Usage: {quiz.submission.token?.promptTokens ?? '-'}
                                         </span>
                                         <span className="fw-bold">
-                                            Price: ${quiz.submission.token?.promptTokens * 0.00000055}
+                                            Price: ${quiz.submission.token?.promptTokens * 0.00000055} 
                                         </span>
                                     </div>
                                 </div>
                                 <div className="token-content border-secondary-subtle border rounded-1 w-100">
                                     <div className="border-secondary-subtle border-bottom p-2 fw-bold">
-                                        Output Token
+                                        Total Output Token
                                     </div>
                                     <div className="p-2 d-flex flex-column">
                                         <span>
-                                           Token Usage: {quiz.submission.token?.completionTokens ?? '-'}
+                                           Total Token Usage: {quiz.submission.token?.completionTokens ?? '-'}
                                         </span>
                                         <span className="fw-bold">
                                             Price: ${quiz.submission.token?.completionTokens * 0.00000219}
@@ -163,14 +163,16 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit, exa
                                 </div>
                                 <div className="token-content border-secondary-subtle border rounded-1 w-100">
                                     <div className="border-secondary-subtle border-bottom p-2 fw-bold">
-                                        Total Token
+                                        Total Token (Token Input + Token Output)
                                     </div>
                                     <div className="p-2 d-flex flex-column">
                                         <span>
-                                            Token Usage: {quiz.submission.token?.totalTokens ?? '-'}
+                                            Total Token Usage: {quiz.submission.token?.totalTokens ?? '-'}
                                         </span>
                                         <span className="fw-bold">
-                                            Price: ${(quiz.submission.token?.promptTokens * 0.00000055) + (quiz.submission.token?.completionTokens * 0.00000219) + (0.00003 * quiz.submission.submission_count)}
+                                            Price: ${(quiz.submission.token?.promptTokens * 0.00000055) + 
+                                                    (quiz.submission.token?.completionTokens * 0.00000219) + 
+                                                    (0.00003 * quiz.submission.submission_count)}
                                         </span>
                                     </div>
                                 </div>
@@ -237,7 +239,7 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit, exa
                         )}
 
                             {quiz.submission.feedback ? (
-                                <div className="bg-body-secondary rounded-1 p-3">
+                                <div className="bg-body-secondary rounded-1 p-3 mt-2">
                                     <p className="fw-bold">Mentor Feedback:</p>
                                     <div style={{ whiteSpace: 'pre-line' }}>{quiz.submission?.feedback}</div>
                                 </div>
