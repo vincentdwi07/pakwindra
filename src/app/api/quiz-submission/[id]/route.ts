@@ -2,14 +2,16 @@ import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
 interface Params {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export async function PATCH(req: Request, { params }: Params) {
   try {
-    const quizSubmissionId = parseInt(params.id)
+    // Await the params since it's now a Promise
+    const { id } = await params
+    const quizSubmissionId = parseInt(id)
     
     if (isNaN(quizSubmissionId)) {
       return NextResponse.json({ error: "Invalid submission ID" }, { status: 400 })

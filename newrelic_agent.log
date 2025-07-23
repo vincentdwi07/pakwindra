@@ -1,0 +1,18 @@
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":1120,"time":"2025-07-23T17:04:47.472Z","msg":"Using New Relic for Node.js. Agent version: 12.25.0; Node version: v22.12.0."}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":1120,"time":"2025-07-23T17:04:48.069Z","msg":"new relic agent control disabled, skipping health reporting","component":"HealthReporter"}
+{"v":0,"level":40,"name":"newrelic","hostname":"AsusVivoBook","pid":1120,"time":"2025-07-23T17:04:48.199Z","msg":"`opentelemetry_bridge` is not enabled, skipping setup of opentelemetry-bridge","component":"opentelemetry-bridge"}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":1120,"time":"2025-07-23T17:04:48.201Z","msg":"Agent state changed from stopped to starting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":1120,"time":"2025-07-23T17:04:48.222Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":1120,"time":"2025-07-23T17:04:48.222Z","msg":"Agent state changed from starting to connecting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":1120,"time":"2025-07-23T17:04:50.711Z","msg":"Agent state changed from connecting to connected."}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":1120,"time":"2025-07-23T17:04:50.711Z","msg":"Connected to collector.newrelic.com:443 with agent run ID BRjVtcHRnl0KAGlyL1NU6EBogRZ4AAgBAAAnIQEAAARgAgRPhwzKAwAHMTIuMjUuMAAMQXN1c1Zpdm9Cb29rAAtjb2RlX21lbnRvcg.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":1120,"time":"2025-07-23T17:04:50.711Z","msg":"Reporting to: https://rpm.newrelic.com/accounts/6910511/applications/1334250698","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":1120,"time":"2025-07-23T17:04:50.824Z","msg":"Valid event_harvest_config received. Updating harvest cycles. {\"report_period_ms\":5000,\"harvest_limits\":{\"error_event_data\":8,\"log_event_data\":833,\"analytic_event_data\":833,\"custom_event_data\":250}}"}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":1120,"time":"2025-07-23T17:04:50.832Z","msg":"Agent state changed from connected to started."}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":1120,"time":"2025-07-23T17:04:51.845Z","msg":"Starting initial 1000ms harvest."}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":19344,"time":"2025-07-23T17:04:53.569Z","msg":"Using New Relic for Node.js. Agent version: 12.25.0; Node version: v22.12.0."}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":19344,"time":"2025-07-23T17:04:54.514Z","msg":"new relic agent control disabled, skipping health reporting","component":"HealthReporter"}
+{"v":0,"level":40,"name":"newrelic","hostname":"AsusVivoBook","pid":19344,"time":"2025-07-23T17:04:55.296Z","msg":"`opentelemetry_bridge` is not enabled, skipping setup of opentelemetry-bridge","component":"opentelemetry-bridge"}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":19344,"time":"2025-07-23T17:04:55.298Z","msg":"Agent state changed from stopped to starting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":19344,"time":"2025-07-23T17:04:55.306Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"AsusVivoBook","pid":19344,"time":"2025-07-23T17:04:55.306Z","msg":"Agent state changed from starting to connecting."}
