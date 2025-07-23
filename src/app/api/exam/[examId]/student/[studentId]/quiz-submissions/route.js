@@ -93,9 +93,11 @@ export async function GET(request, { params }) {
                     feedback: submission.feedback,
                     aiNote: submission.aiNote,
                     score: submission.score,
-                    isCorrect: submission.isCorrect,
+                    // isCorrect: submission.isCorrect,
                     createdAt: submission.createdAt,
-                    updatedAt: submission.updatedAt
+                    updatedAt: submission.updatedAt,
+                    token: submission.token,
+                    submission_count: submission.submission_count
                 } : null
             }
         })
@@ -103,14 +105,20 @@ export async function GET(request, { params }) {
         // Return response
         return NextResponse.json({
             student,
-            quizzes
+            quizzes,
+            exam: {
+                exam_id: examWithQuizzes.exam_id,
+                title: examWithQuizzes.title,
+                minScore: examWithQuizzes.minScore,
+                startDate: examWithQuizzes.startDate,
+                endDate: examWithQuizzes.endDate
+            }
         }, {
             status: 200,
             headers: {
                 'Content-Type': 'application/json',
             }
         })
-
     } catch (error) {
         // Log server error
         console.error('API Error:', {

@@ -111,6 +111,7 @@
     aiNote    String?     // AI comment
     status    QuizStatus  @default(OPEN)
     submission_count Int?
+    token     Json?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

@@ -46,7 +46,7 @@ export async function GET(request) {
 
         return NextResponse.json({
             status: submission.status,
-            isCorrect: submission.isCorrect,
+            // isCorrect: submission.isCorrect,
             feedback: submission.feedback,
             aiNote: submission.aiNote,
             score: submission.score

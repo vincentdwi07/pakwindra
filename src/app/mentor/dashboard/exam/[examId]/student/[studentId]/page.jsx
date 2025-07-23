@@ -12,6 +12,7 @@ export default function MentorStudentExamDetail() {
     const [student, setStudent] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [exam, setExam] = useState(null)
 
     console.log("quizzes: ",quizzes);
 
@@ -66,6 +67,7 @@ export default function MentorStudentExamDetail() {
             // Update state with response data
             setQuizzes(data.quizzes)
             setStudent(data.student)
+            setExam(data.exam)
             setError(null)
 
         } catch (err) {
@@ -132,6 +134,7 @@ export default function MentorStudentExamDetail() {
                     </div>
                 ) : (
                     <MentorDetailStudentQuiz 
+                        exam={exam}
                         quizzes={quizzes}
                         onFeedbackSubmit={fetchQuizzes}
                     />

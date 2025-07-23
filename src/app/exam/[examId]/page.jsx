@@ -55,6 +55,7 @@ export default async function ExamDetail({ params }) {
                     exam={exam} 
                     userId={user.user_id}
                     key={timestamp}
+                    // minScore={exam.minScore}
                 />
             </div>
         </div>

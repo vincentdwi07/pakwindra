@@ -23,7 +23,7 @@ export const getExams = cache(async (userId, userRole) => {
                             quiz_submission_id: true,
                             studentId: true,
                             score: true,
-                            isCorrect: true,
+                            // isCorrect: true,
                             createdAt: true 
                         }
                     }
@@ -161,7 +161,7 @@ export const getExamById = cache(async (examId, userId, userRole) => {
                             quiz_submission_id: true,
                             studentId: true,
                             score: true,
-                            isCorrect: true,
+                            // isCorrect: true,
                             feedback: true,
                             aiNote: true,
                             answer: true,

@@ -20,13 +20,22 @@ export default function CreateExamPage() {
     // Date untuk dueDate
     const [date, setDate] = useState('');
 
+    // Default rubrik structure
+    const defaultRubrik = [
+        { name: "Input Accuracy", weight: 0 },
+        { name: "Logic Correctness", weight: 0 },
+        { name: "Output Accuracy", weight: 0 },
+        { name: "Edge Case Handling", weight: 0 },
+        { name: "Syntax Validity", weight: 0 }
+    ];
+
     // Sistem untuk mengatur QUIZ (quizKomponen)
     const [quizComponents, setQuizComponents] = useState([{ 
         id: 1,
         file: null,
         submissionLimit: null,
         instruction: '',
-        rubrik: '',
+        rubrik: [...defaultRubrik], // Changed from string to array
         language: 'Python'
     }]);
 
@@ -38,7 +47,7 @@ export default function CreateExamPage() {
             file: null,
             submissionLimit: null,
             instruction: '',
-            rubrik: '',
+            rubrik: [...defaultRubrik], // Use default rubrik for new components
             language: 'Python'
         }]);
     };
@@ -89,12 +98,33 @@ export default function CreateExamPage() {
         ));
     }
 
-    const handleRubrik = (e, id) => {
-        const value = e.target.value;
-        const rubrik = value === '' ? null : value;
+    // Updated function to handle rubrik weight changes
+    const handleRubrikWeightChange = (e, quizId, rubrikIndex) => {
+        const value = parseFloat(e.target.value) || 0;
         setQuizComponents(prev => prev.map(comp => 
-            comp.id === id ? {...comp, rubrik: rubrik} : comp
+            comp.id === quizId ? {
+                ...comp, 
+                rubrik: comp.rubrik.map((rubrikItem, index) => 
+                    index === rubrikIndex ? {...rubrikItem, weight: value} : rubrikItem
+                )
+            } : comp
         ));
+    }
+
+    // Function to calculate total weight for a quiz
+    const calculateTotalWeight = (rubrik) => {
+        return rubrik.reduce((total, item) => total + (item.weight || 0), 0);
+    }
+
+    // Function to convert rubrik array to string for API
+    const rubrikToString = (rubrik) => {
+        return rubrik.map(item => `${item.name}:${item.weight}`).join(',');
+    }
+
+    // Function to validate rubrik weights
+    const validateRubrikWeights = (rubrik) => {
+        const total = calculateTotalWeight(rubrik);
+        return total === 100;
     }
     
     const handleLanguage = (e, id) => {
@@ -108,8 +138,6 @@ export default function CreateExamPage() {
     const [success, setSuccess] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -122,17 +150,18 @@ export default function CreateExamPage() {
             return;
         }
 
-        const missingRubrikOrLang = quizComponents.some(q => !q.rubrik || !q.language);
-        if (missingRubrikOrLang) {
-            setError('Please fill in rubrik and language for all quizzes');
+        // Validate rubrik weights
+        const invalidRubrik = quizComponents.find(q => !validateRubrikWeights(q.rubrik));
+        if (invalidRubrik) {
+            setError(`Quiz ${invalidRubrik.id}: Total rubrik weight must equal 100%. Current total: ${calculateTotalWeight(invalidRubrik.rubrik)}%`);
             return;
         }
 
-        // const missingFiles = quizComponents.some(comp => !comp.file);
-        // if (missingFiles) {
-        //     setError('Please upload PDF files for all quizzes');
-        //     return;
-        // }
+        const missingLanguage = quizComponents.some(q => !q.language);
+        if (missingLanguage) {
+            setError('Please select language for all quizzes');
+            return;
+        }
 
         setIsSubmitting(true);
 
@@ -173,8 +202,6 @@ export default function CreateExamPage() {
                 })
             );
 
-
-
             const payload = {
                 title: String(formData.title),
                 courseName: String(formData.courseName),
@@ -187,11 +214,10 @@ export default function CreateExamPage() {
                     submissionLimit: quiz.submissionLimit ? Number(quiz.submissionLimit) : null,
                     filename: String(quiz.filename) || "",
                     instruction: quiz.instruction || "",
-                    rubrik: String(quiz.rubrik) || "",
+                    rubrik: rubrikToString(quiz.rubrik), // Convert array to string
                     language: String(quiz.language) || ""
                 }))
             };
-
 
             // Make request with explicit headers
             const examResponse = await fetch('/api/exams/create', {
@@ -203,7 +229,6 @@ export default function CreateExamPage() {
                 body: JSON.stringify(payload)
             });
 
-            
             const responseText = await examResponse.text();
             console.log('Raw Response:', responseText);
 
@@ -385,18 +410,40 @@ export default function CreateExamPage() {
                                                             </select>
                                                         </div>
 
+                                                        {/* Updated Rubrik Section */}
+                                                        <div className="d-flex flex-column mb-3">
+                                                            <label className="text-muted mb-2">
+                                                                Quiz Rubrik 
+                                                            </label>
+                                                            {component.rubrik.map((rubrikItem, index) => (
+                                                                <>
+                                                                
+                                                                <div key={index} className="input-group mb-1">
+                                                                    <span className="flex-grow-1 rounded-start-2 justify-content-start mentor-add-exam-input border-end-0" style={{ marginRight: "1px" }}>
+                                                                        {rubrikItem.name}
+                                                                    </span>
+                                                                    <input
+                                                                        type="number"
+                                                                        className="mentor-add-exam-input border-end-0"
+                                                                        placeholder="Weight"
+                                                                        min="0"
+                                                                        max="100"
+                                                                        step="5"
+                                                                        value={rubrikItem.weight || ''}
+                                                                        onChange={(e) => handleRubrikWeightChange(e, component.id, index)}
+                                                                        style={{borderRadius: 0}}
+                                                                        required
+                                                                    />
+                                                                    <span className="input-group-text mentor-add-exam-input border-start-0" >%</span>
+                                                                </div>
+                                                                </>
 
-                                                        <div className="d-flex flex-column">
-                                                            <label htmlFor="" className="text-muted mb-2">Quiz Rubrik</label>
-                                                            <textarea
-                                                                id={`quizText-${component.id}`}
-                                                                className="form-control mb-3 mentor-add-exam-input"
-                                                                rows="4"
-                                                                placeholder="Enter quiz rubrik..."
-                                                                value={component.rubrik || ""}
-                                                                required
-                                                                onChange={(e) => handleRubrik(e, component.id)}
-                                                            />
+                                                                ))}
+                                                                {calculateTotalWeight(component.rubrik) !== 100 && (
+                                                                    <small className="text-danger">
+                                                                        Total rubrik weight must equal 100%
+                                                                    </small>
+                                                                )}
                                                         </div>
                                                     </div>
 
@@ -467,5 +514,3 @@ export default function CreateExamPage() {
         </div>
     )
 }
-
-

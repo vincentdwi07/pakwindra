@@ -10,7 +10,8 @@ export default function ExamContent({
                                         creatorName,
                                         endDate,
                                         quizzes,
-                                        timing
+                                        timing,
+                                        minScore
                                     }) {
     const formatDate = (date) => {
         return new Date(date).toLocaleString('en-US', {
@@ -88,7 +89,7 @@ export default function ExamContent({
                             </div>
                         ): ''}
                         {status === "GRADED" && score !== null && (
-                            <div className={`user-exam-score text-light ${score < 60 ? 'bg-danger' : 'bg-success'}`}>
+                            <div className={`user-exam-score text-light ${score < minScore ? 'bg-danger' : 'bg-success'}`}>
                                 <span><i className="bi bi-file-earmark-check-fill me-2"></i></span>
                                 {score.toFixed(1)}
                             </div>

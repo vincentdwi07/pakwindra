@@ -170,7 +170,7 @@ export async function POST(request) {
                     data: {
                         answer: answer,
                         status: 'GRADING',
-                        isCorrect: false,
+                        // isCorrect: false,
                         aiNote: 'AI evaluation in progress...',
                         feedback: null,
                         score: null,
@@ -186,7 +186,7 @@ export async function POST(request) {
                         studentId: user.user_id,
                         quizId: parseInt(quizId),
                         status: 'GRADING',
-                        isCorrect: false,
+                        // isCorrect: false,
                         aiNote: 'AI evaluation in progress...',
                         feedback: null,
                         score: null,
@@ -210,8 +210,29 @@ export async function POST(request) {
             // Use Promise to handle background processing
             Promise.resolve().then(async () => {
                 try {
-                    const { aiResponse, isCorrect, score } = await evaluateCode(answer, questionText, quizData.rubrik, quizData.language)
+                    const { aiResponse, score, token } = await evaluateCode(answer, questionText, quizData.rubrik, quizData.language)
                     
+                    const previousSubmission = await db.quizSubmission.findUnique({
+                        where: {
+                            quiz_submission_id: submission.quiz_submission_id
+                        },
+                        select: {
+                            token: true
+                        }
+                    });
+
+                    const prevToken = previousSubmission?.token ?? { 
+                        promptTokens: 0, 
+                        completionTokens: 0, 
+                        totalTokens: 0 
+                    };
+
+                    const mergedToken = {
+                        promptTokens: (prevToken.promptTokens || 0) + (token.promptTokens || 0),
+                        completionTokens: (prevToken.completionTokens || 0) + (token.completionTokens || 0),
+                        totalTokens: (prevToken.totalTokens || 0) + (token.totalTokens || 0)
+                    };
+
                     await db.quizSubmission.update({
                         where: { 
                             quiz_submission_id: submission.quiz_submission_id 
@@ -219,11 +240,12 @@ export async function POST(request) {
                         data: {
                             status: 'GRADED',
                             aiNote: aiResponse,
-                            isCorrect: isCorrect,
+                            // isCorrect: isCorrect,
                             score: score,
+                            token: mergedToken,  
                             updatedAt: new Date()
                         }
-                    })
+                    });
 
                     const examInfo = await db.exam.findUnique({
                         where: { exam_id: examId },
@@ -277,7 +299,7 @@ export async function POST(request) {
                         data: {
                             status: 'GRADED',
                             aiNote: 'AI evaluation failed, please try again later',
-                            isCorrect: false,
+                            // isCorrect: false,
                             updatedAt: new Date()
                         }
                     })
@@ -356,7 +378,7 @@ export async function GET(request) {
                 submitted_code: submission?.answer || '',
                 ai_note: submission?.aiNote || '',
                 educator_note: submission?.feedback || '',
-                is_correct: submission?.isCorrect || false,
+                // is_correct: submission?.isCorrect || false,
                 score: submission?.score || null,
                 submission_id: submission?.quiz_submission_id || null,
                 createdAt: submission?.createdAt || null,

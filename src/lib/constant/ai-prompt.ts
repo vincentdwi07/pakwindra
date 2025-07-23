@@ -62,9 +62,11 @@ export const PROMPT_CONTEXT_INDO = `
         3. **Saran dan Pembimbingan:** Berikan saran berbentuk bimbingan atau arahan, seperti mentor manusia: 
                                        dorong mahasiswa untuk berpikir ulang tentang logika mereka, pertimbangkan 
                                        struktur alternatif atau cek bagian tertentu dari kodenya.
-        4. **Pernyataan Evaluasi Singkat:** Di akhir umpan balik, berikan satu kalimat yang menyatakan apakah
-                                            kode ini secara keseluruhan **benar (correct)** atau **salah (incorrect)**. 
-                                            Gunakan format: \`Status: correct\` atau \`Status: incorrect\`.
+        4. **Penilaian Berdasarkan Rubrik:** berikan penjabaran nilai untuk setiap aspek rubrik tersebut tanpa persentase, dalam bentuk list bernomor. 
+        Jelaskan alasan setiap skor dalam format:
+        \`\`\`
+        **[Nama Aspek Rubrik] ([skor]/[maksimum])** : [penjelasan singkat]
+        \`\`\
 
         ### Output tambahan (untuk sistem):
         - Di baris terakhir, berikan skor numerik berdasarkan rubrik di atas dengan format: \`Score: 85\` 

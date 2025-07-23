@@ -43,6 +43,7 @@ export default async function Home() {
                   score={exam.examSubmissions?.[0]?.score ?? null}
                   status={exam.examSubmissions?.[0]?.status ?? 'OPEN'}
                   timing={exam.timing} 
+                  minScore={exam.minScore}
               />
           ))}
 

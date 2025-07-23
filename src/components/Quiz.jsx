@@ -40,7 +40,7 @@ export default function Quiz({ exam, userId }) {
                 submissionStatus: submission?.status || 'OPEN',
                 educator_note: submission?.feedback || null,
                 ai_note: submission?.aiNote || null,
-                educator_is_correct: submission?.isCorrect || false,
+                // educator_is_correct: submission?.isCorrect || false,
                 filePath: quiz.filePath || null,
                 fileUrl: quiz.fileUrl || null,
                 score: submission?.score || 0,
@@ -53,6 +53,11 @@ export default function Quiz({ exam, userId }) {
             return acc
         }, {})
     })
+
+    // Function to check if quiz passes
+    const isPass = (quiz) => {
+        return quiz.score >= exam.minScore;
+    };
 
     // Fungsi untuk refresh data dari database
     const refreshData = async () => {
@@ -239,7 +244,7 @@ export default function Quiz({ exam, userId }) {
                             activeTab === quizId 
                                 ? 'active'
                                 : quiz.submissionStatus === 'GRADED'
-                                    ? quiz.educator_is_correct
+                                    ? isPass(quiz)
                                         ? 'bg-success text-light'
                                         : 'bg-danger text-light'
                                     : 'bg-transparent text-dark'
@@ -275,6 +280,10 @@ export default function Quiz({ exam, userId }) {
                             </div>
                         )}
 
+                        <p className="mb-2 mt-3 fw-bold d-flex flex-column">
+                            Nilai minimum: <span className="fw-normal">{exam.minScore}</span>
+                        </p>
+
                         
                         <p className="fw-bold mb-2 mt-3">
                             {(quiz.submissionStatus === "GRADING" || quiz.submissionStatus === "GRADED")
@@ -295,7 +304,7 @@ export default function Quiz({ exam, userId }) {
                                 options={{
                                     readOnly: quizzesData[activeTab]?.submissionStatus === "GRADING" || 
                                             (quizzesData[activeTab]?.submissionStatus === "GRADED" && 
-                                            quizzesData[activeTab]?.educator_is_correct),
+                                            isPass(quizzesData[activeTab])),
                                     minimap: { enabled: false },
                                     lineNumbers: "on",
                                     wordWrap: "on",
@@ -311,7 +320,7 @@ export default function Quiz({ exam, userId }) {
                             </p>          
                         ): ('')}
 
-                        {quiz.submissionStatus === "GRADED" && quiz.educator_is_correct ? null : (
+                        {quiz.submissionStatus === "GRADED" && isPass(quiz) ? null : (
                             quiz.quizSubmissionLimit === "Unlimited" ? (
                                 quiz.submissionStatus === "GRADING" ? (
                                     <p className="text-muted bg-body-secondary p-3 text-center rounded-1 m-0">
@@ -358,31 +367,23 @@ export default function Quiz({ exam, userId }) {
                         {/* Feedback Section */}
                         {quiz.submissionStatus === 'GRADED' && (
                             <>
-                                <div className={`user-exam-feedback ${quiz.educator_is_correct ? 'correct' : 'false'}`}>
+                                <div className={`user-exam-feedback ${isPass(quiz) ? 'correct' : 'false'}`}>
                                     <div>
                                         <h6 className="p-0 m-0">AI Feedbacks:</h6>
                                         <Markdown>{quiz.ai_note ?? 'No Feedback Added'}</Markdown>
                                         {quiz?.educator_note && (
                                             <>
                                                 <h6 className="p-0 m-0">Educator Feedbacks:</h6>
-                                                <p>quiz.educator_note</p>
+                                                <p>{quiz.educator_note}</p>
                                             </>
-                                        )}
-                                        <p className="m-0 p-0 text-body-secondary">Conclusion:</p>
-                                        {quiz.educator_is_correct ? (
-                                            <h5 className="text-success m-0 p-0">Correct <i className="bi bi-check2"></i></h5>
-                                        ) : (
-                                            <h5 className="text-danger m-0 p-0">False <i className="bi bi-x-lg"></i></h5>
                                         )}
                                         
                                     </div>
                                 </div>
 
-                                {typeof quiz.score === 'number' && (
-                                    <h5 className={`fw-bold mt-2 mb-0 w-100 d-flex justify-content-center rounded-1 p-3  ${quiz.educator_is_correct ? "bg-green" : "bg-red"}`}>
-                                        Score: {quiz.score} / 100
-                                    </h5>
-                                )}
+                                <h5 className={`fw-bold mt-2 mb-0 w-100 d-flex justify-content-center rounded-1 p-3  ${isPass(quiz) ? "bg-green" : "bg-red"}`}>
+                                    Score: {Number(quiz.score)} / 100
+                                </h5>
                             </>
                         )}
                     </div>
