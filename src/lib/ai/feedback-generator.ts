@@ -119,7 +119,6 @@ export async function feedbackGenerator(
   const callbackManager = CallbackManager.fromHandlers({
     handleLLMEnd: (output) => {
       try {
-        // Cara yang lebih type-safe untuk mendapatkan token usage
         const usage = output.llmOutput?.estimatedTokenUsage || 
                      (output.generations?.[0]?.[0] as any)?.message?.kwargs?.usage_metadata ||
                      (output.generations?.[0]?.[0] as any)?.message?.kwargs?.response_metadata?.usage;

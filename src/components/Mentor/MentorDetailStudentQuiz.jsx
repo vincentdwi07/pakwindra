@@ -171,8 +171,7 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit, exa
                                         </span>
                                         <span className="fw-bold">
                                             Price: ${(quiz.submission.token?.promptTokens * 0.00000055) + 
-                                                    (quiz.submission.token?.completionTokens * 0.00000219) + 
-                                                    (0.00003 * quiz.submission.submission_count)}
+                                                    (quiz.submission.token?.completionTokens * 0.00000219)}
                                         </span>
                                     </div>
                                 </div>
