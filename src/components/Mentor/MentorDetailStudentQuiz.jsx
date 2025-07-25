@@ -98,7 +98,9 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit, exa
                         {(quiz.instruction || quiz.fileUrl) && (
                             <>
                                 {quiz.instruction && (
-                                    <Markdown>{quiz.instruction}</Markdown>
+                                    <>
+                                        <p>{quiz.instruction}</p>
+                                    </>
                                 )}
                                 {quiz.fileUrl && typeof quiz.fileUrl === 'string' && quiz.fileUrl !== 'undefined' && (
                                     <iframe
@@ -108,6 +110,11 @@ export default function MentorDetailStudentQuiz({ quizzes, onFeedbackSubmit, exa
                                 )}
                             </>
                         )}
+                    </div>
+
+                    <div className="mb-3">
+                        <p className="fw-bold m-0">Nilai Minimum</p>
+                        <span>{exam.minScore}</span>
                     </div>
 
                     <div>
