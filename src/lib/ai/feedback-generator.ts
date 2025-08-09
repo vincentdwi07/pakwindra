@@ -81,7 +81,7 @@
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RunnableSequence } from '@langchain/core/runnables';
-import { PROMPT_CONTEXT_INDO } from "@/lib/constant/ai-prompt";
+import { PROMPT_CONTEXT_INDO, PROMPT_CONTEXT_INDO_2 } from "@/lib/constant/ai-prompt";
 import { ChatDeepSeek } from '@langchain/deepseek';
 import { CallbackManager } from "@langchain/core/callbacks/manager";
 
@@ -136,7 +136,7 @@ export async function feedbackGenerator(
     },
   });
 
-  const promptTemplate = PromptTemplate.fromTemplate(PROMPT_CONTEXT_INDO);
+  const promptTemplate = PromptTemplate.fromTemplate(PROMPT_CONTEXT_INDO_2);
   
   const chain = RunnableSequence.from([
     promptTemplate,

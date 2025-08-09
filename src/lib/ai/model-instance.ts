@@ -118,7 +118,7 @@ export function getChatModel(
 
             modelInstance = new ChatDeepSeek({
                 model: modelName,
-                temperature: deepseekConfig.temperature ?? 0.1,
+                temperature: deepseekConfig.temperature ?? 0.0,
                 maxRetries: deepseekConfig.maxRetries ?? 2,
                 apiKey: deepseekApiKey,
                 configuration: {
